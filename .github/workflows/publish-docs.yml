@@ -71,8 +71,7 @@ jobs:
       id-token: write
     steps:
       - name: Publish docs HTML
-        # uses: actions/deploy-pages@v4
         uses: actions/upload-pages-artifact@v3.0.1
         with:
-          name: docs-html
-          path: '.'
+          name: docs-site
+          path: .
