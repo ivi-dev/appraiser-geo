@@ -1,6 +1,11 @@
 name: Publish docs
 run-name: Publish docs
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 on: 
   push:
     branches:
