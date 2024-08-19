@@ -1,4 +1,7 @@
 .*
 !.coveragerc
 !.gitignore
+*.spec
 __pycache__
+build
+dist
