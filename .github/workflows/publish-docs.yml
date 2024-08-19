@@ -9,33 +9,48 @@ on:
 jobs:
   checkout-source-code:
     runs-on: ubuntu-latest
-    name: Checking out the app's source code
+    name: Check out source code
     steps:
       - uses: actions/checkout@v4.1.7
         with:
           ref: master
+      - name: Upload requirements
+        uses: actions/upload-artifact@v4
+        with:
+          name: reqs
+          path: requirements.txt
+      - name: Upload docs source
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-html
+          path: docs/build/html
   install-python:
     runs-on: ubuntu-latest
-    name: Installing Python
+    name: Install Python
     steps:
       - uses: actions/setup-python@v5.1.1
         with:
           python-version: 3.11.1
   install-deps: 
     runs-on: ubuntu-latest
-    name: Installing dependencies
+    name: Install dependencies
     needs: [install-python, checkout-source-code]
     steps:
-        - run: pip install -r requirements.txt
+      - name: Download requirements
+        uses: actions/download-artifact@v4
+        with:
+          name: reqs
+      - name: Install requirements
+        run: pip install -r requirements.txt
   build-docs:
       runs-on: ubuntu-latest
-      name: Building docs
+      name: Buildi docs
       needs: install-deps
       steps:
         - run: make html
   publish-doc-site:
     runs-on: ubuntu-latest
-    name: Publishing docs site
+    name: Publish docs site
     needs: build-docs
     steps:
       - name: Upload site's static files
