@@ -9,14 +9,15 @@ level(s) and constituent areas.
 
 import re
 import json
+import sys
 from typing import Iterable, Mapping
 
 from src.constants import ALL
 from src.types import City, PartialCity
 
-from .util import read_sorted, sort_neighborhoods
-from .args import parse as parse_args
-from .extractor import NEIGHBORHOODS_KEY, extract_geo_data
+from src.util import read_sorted, sort_neighborhoods
+from src.args import parse as parse_args
+from src.extractor import NEIGHBORHOODS_KEY, extract_geo_data
 
 
 # Regex
@@ -133,8 +134,11 @@ if __name__ == '__main__': # pragma: no cover
     out_path = prog_args.out
     if in_csv: # Work on the specified CSV file
         cities, in_neighborhoods = extract_geo_data(in_csv)
-    else: # Work on the specified TEXT files
+    elif in_cities: # Work on the specified TEXT files
         cities = read_sorted(in_cities)
+    else:
+        print('ERROR: Please provide either a CSV or a pair of cities or neighorhood files.')
+        sys.exit(1)
     cities = map_geo(cities)
     cities = map_neighborhoods(cities, in_neighborhoods)
     cities = sort_neighborhoods(cities)
