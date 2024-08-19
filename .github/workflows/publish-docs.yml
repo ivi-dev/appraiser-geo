@@ -1,0 +1,24 @@
+name: Publish docs
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    name: Publishing app's docs
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4.1.7
+        with:
+          ref: master
+      - name: Setup Python
+        uses: actions/setup-python@v5.1.1
+        with:
+          python-version: 3.11.1
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Build docs
+        run: scripts/build-docs.ps1
