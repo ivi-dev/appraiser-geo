@@ -13,7 +13,7 @@ def parser() -> argparse.ArgumentParser:
     """
 
     arg_parser = argparse.ArgumentParser(
-        description='Merge the content of files containing information about '
+        description='Process the content of file(s) containing information about '
                     'populated places - cities and nighborhoods, formatted '
                     'according to the Appraiser\'s geographic classification '
                     'into a single structured string.'
