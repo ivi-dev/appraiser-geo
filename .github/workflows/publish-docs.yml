@@ -28,10 +28,10 @@ jobs:
       - name: Build docs
         run: make html
       - name: Upload docs site artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: site
+        uses: actions/upload-pages-artifact@v1
+        with: 
           path: docs/build/html
+          name: site
       - name: Publish docs site
         uses: actions/deploy-pages@v4
         with:
