@@ -53,7 +53,7 @@ jobs:
         with:
           name: docs
       - name: Build docs
-        run: make html
+        run: ls -l && make html
       - name: Upload docs HTML
         uses: actions/upload-artifact@v4
         with:
