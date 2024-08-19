@@ -1,11 +1,6 @@
 name: Publish docs
 run-name: Publish docs
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 on: 
   push:
     branches:
@@ -13,6 +8,10 @@ on:
 
 jobs:
   publish-docs:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
     name: Publishing app's docs
     steps:
@@ -29,7 +28,6 @@ jobs:
       - name: Build docs
         run: make html
       - name: Publish docs site
-        run: ls -l
-        # uses: actions/deploy-pages@v4.0.5
-        # with:
-        #   artifact_name: docs/build/html
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: docs/build/html
