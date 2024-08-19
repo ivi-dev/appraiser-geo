@@ -24,11 +24,11 @@ jobs:
         with:
           name: Makefile
           path: Makefile
-      - name: Upload docs source
+      - name: Upload docs
         uses: actions/upload-artifact@v4
         with:
-          name: docs-source
-          path: docs/source
+          name: docs
+          path: docs
   build-docs:
     runs-on: ubuntu-latest
     name: Build docs
@@ -51,7 +51,7 @@ jobs:
       - name: Download docs source
         uses: actions/download-artifact@v4
         with:
-          name: docs-source
+          name: docs
       - name: Build docs
         run: make html
       - name: Upload docs HTML
