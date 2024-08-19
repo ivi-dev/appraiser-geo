@@ -67,11 +67,17 @@ jobs:
     name: Publish docs site
     needs: build-docs
     permissions:
+      contents: read
       pages: write
       id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.docs-deployment.outputs.page_url }}
     steps:
-      - name: Publish docs HTML
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v3
+      - name: Upload docs site artifact
         uses: actions/upload-pages-artifact@v3.0.1
-        with:
-          name: docs-site
-          path: .
+      - name: Deploy docs site
+        id: docs-deployment
+        uses: actions/deploy-pages@v1
