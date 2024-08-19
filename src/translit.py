@@ -43,10 +43,10 @@ class Transliterator:
         `transliterate <https://pypi.org/project/transliterate/>`_
         library for doing the transliteration.
         """
-        
+
         val = translit(name, self.locale)
         return self._correct_spelling(val) if self.corr_table else val
-    
+
     def _correct_spelling(self, val: str) -> str:
         """
         Correct the spelling of `val` according to this  

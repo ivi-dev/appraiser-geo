@@ -23,7 +23,7 @@ GL2_KEY = 'gl2'
 CITY_LINE_SEPARATOR = 5 * '.'
 
 transliter = Transliterator(
-    locale='bg', 
+    locale='bg',
     corr_table={
         'софиа': 'София',
         'велико тарново': 'Велико Търново'
@@ -88,7 +88,7 @@ def extract_geo_data(path: str) -> GeoSplit:
                     else:
                         data[city_name].update({GL1_KEY: gl1, GL2_KEY: col2})
     return split_geo_data(data)
-    
+
 
 def split_geo_data(data: Mapping[str, City]) -> GeoSplit:
     """

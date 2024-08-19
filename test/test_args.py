@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 from argparse import Namespace
 import unittest
 

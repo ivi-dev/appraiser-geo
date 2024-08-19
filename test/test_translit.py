@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import unittest
 
 from src.translit import Transliterator

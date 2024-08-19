@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import unittest
 from unittest.mock import mock_open
 

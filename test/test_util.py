@@ -1,6 +1,4 @@
-"""
-Test the app's utility module.`
-"""
+# pylint: skip-file
 
 import unittest
 from unittest.mock import call, mock_open, patch

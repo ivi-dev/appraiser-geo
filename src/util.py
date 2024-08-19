@@ -8,7 +8,7 @@ from src.constants import NEIGHBORHOODS_KEY
 from src.types import City
 
 
-def print_dict(dict: Mapping[any, any]) -> None:
+def print_dict(d: Mapping[any, any]) -> None:
     """
     Print the specified dictionary to the standard output.
 
@@ -20,8 +20,8 @@ def print_dict(dict: Mapping[any, any]) -> None:
     >>> 'c': {'d': 3}
     """
 
-    for key in dict:
-        print(f'{key}: {dict[key]}')
+    for key in d:
+        print(f'{key}: {d[key]}')
 
 
 def read_sorted(path: str) -> Iterable[str]:

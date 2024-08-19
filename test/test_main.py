@@ -1,7 +1,5 @@
-"""
-Test the app's main module.
-"""
-
+# pylint: skip-file
+ 
 import unittest
 from unittest.mock import call, mock_open, patch
 

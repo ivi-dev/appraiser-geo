@@ -25,10 +25,10 @@ CITY_NAME_GROUP = 'city_name'
 CITY_DELIM_GROUP = 'delim'
 GEO_LEVEL_1_GROUP = 'gl1'
 GEO_LEVEL_2_GROUP = 'gl2'
-CITY_REGEX = f'(?P<{CITY_NAME_GROUP}>.+?)'                  \
-             f'(?P<{CITY_DELIM_GROUP}>\.+?)'                \
-             f'\(GL1:\s*(?P<{GEO_LEVEL_1_GROUP}>.+?)'       \
-             f'(;\s*GL2:\s*(?P<{GEO_LEVEL_2_GROUP}>.+?))*\)'
+CITY_REGEX = fr'(?P<{CITY_NAME_GROUP}>.+?)'                  \
+             fr'(?P<{CITY_DELIM_GROUP}>\.+?)'                \
+             fr'\(GL1:\s*(?P<{GEO_LEVEL_1_GROUP}>.+?)'       \
+             fr'(;\s*GL2:\s*(?P<{GEO_LEVEL_2_GROUP}>.+?))*\)'
 CITY_DELIM_REGEX = r'^\s*-+\s*$'
 CITY_NAME_REGEX = f'^(?P<{CITY_NAME_GROUP}>.+):$'
 
@@ -36,7 +36,7 @@ CITY_NAME_REGEX = f'^(?P<{CITY_NAME_GROUP}>.+):$'
 GEO_KEY = 'geography'
 GEO_LEVEL_1_KEY = 'level-1'
 GEO_LEVEL_2_KEY = 'level-2'
-    
+
 
 def map_geo(cities: Iterable[str]) -> Mapping[str, PartialCity]:
     """
@@ -64,7 +64,7 @@ def map_geo(cities: Iterable[str]) -> Mapping[str, PartialCity]:
 
 
 def map_neighborhoods(
-    cities: Mapping[str, PartialCity], 
+    cities: Mapping[str, PartialCity],
     neighborhoods: str | Mapping[str, Iterable[str]]
 ) -> Mapping[str, City]:
     """
@@ -86,7 +86,8 @@ def map_neighborhoods(
             neighborhoods_ = file.readlines()
         delim_start, delim_end = False, False
         for neighborhood in neighborhoods_:
-            if not delim_start and not delim_end: # City's openning char sequence not yet encountered
+            # City's openning char sequence not yet encountered
+            if not delim_start and not delim_end:
                 if re.match(CITY_DELIM_REGEX, neighborhood): # Mark start of city name
                     delim_start = True
                     continue
@@ -133,9 +134,9 @@ if __name__ == '__main__': # pragma: no cover
     in_neighborhoods = prog_args.neighborhoods
     out_path = prog_args.out
     if in_csv: # Work on the specified CSV file
-        cities, in_neighborhoods = extract_geo_data(in_csv)
+        cities_, in_neighborhoods = extract_geo_data(in_csv)
     elif in_cities: # Work on the specified TEXT files
-        cities = read_sorted(in_cities)
+        cities_ = read_sorted(in_cities)
     else:
         print(
             'ERROR: Please provide either a CSV or a '
@@ -143,7 +144,7 @@ if __name__ == '__main__': # pragma: no cover
             'For help run the program with the -h option.'
         )
         sys.exit(1)
-    cities = map_geo(cities)
-    cities = map_neighborhoods(cities, in_neighborhoods)
-    cities = sort_neighborhoods(cities)
-    write_cities_json(cities, out_path)
+    cities_ = map_geo(cities_)
+    cities_ = map_neighborhoods(cities_, in_neighborhoods)
+    cities_ = sort_neighborhoods(cities_)
+    write_cities_json(cities_, out_path)

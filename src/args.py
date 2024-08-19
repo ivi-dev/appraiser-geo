@@ -36,7 +36,7 @@ def parser() -> argparse.ArgumentParser:
     )
     arg_parser.add_argument(
         '--out', 
-        default='geo.json', 
+        default='geo.json',
         help='Path to the file to write the merged geo data to. '
              'If not specified the data will go into geo.json in the '
              'current directory.'
