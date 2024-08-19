@@ -1,0 +1,1 @@
+pyinstaller src/main.py --onefile --noconfirm --name appraiser-geo
