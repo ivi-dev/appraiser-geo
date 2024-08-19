@@ -64,6 +64,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish docs site
     needs: build-docs
+    permissions:
+      pages: write
+      id-token: write
     steps:
       - name: Publish docs HTML
         uses: actions/deploy-pages@v4
