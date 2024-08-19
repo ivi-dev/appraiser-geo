@@ -7,32 +7,43 @@ on:
       - master
 
 jobs:
-  publish-docs:
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
+  checkout-source-code:
     runs-on: ubuntu-latest
-    name: Publishing app's docs
+    name: Checking out the app's source code
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.1.7
         with:
           ref: master
-      - name: Install Python
-        uses: actions/setup-python@v5.1.1
+  install-python:
+    runs-on: ubuntu-latest
+    name: Installing Python
+    steps:
+      - uses: actions/setup-python@v5.1.1
         with:
           python-version: 3.11.1
-      - name: Install deps
-        run: pip install -r requirements.txt
-      - name: Build docs
-        run: make html
-      - name: Upload docs site artifact
+  install-deps: 
+    runs-on: ubuntu-latest
+    name: Installing dependencies
+    needs: [install-python, checkout-source-code]
+    steps:
+        - run: pip install -r requirements.txt
+  build-docs:
+      runs-on: ubuntu-latest
+      name: Building docs
+      needs: install-deps
+      steps:
+        - run: make html
+  publish-doc-site:
+    runs-on: ubuntu-latest
+    name: Publishing docs site
+    needs: build-docs
+    steps:
+      - name: Upload site's static files
         uses: actions/upload-pages-artifact@v1
         with: 
           path: docs/build/html
           name: site
-      - name: Publish docs site
+      - name: Publish site's static files
         uses: actions/deploy-pages@v4
         with:
           artifact_name: site
