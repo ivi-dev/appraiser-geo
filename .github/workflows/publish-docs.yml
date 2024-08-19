@@ -29,6 +29,7 @@ jobs:
         with:
           name: docs
           path: docs/
+
   build-docs:
     runs-on: ubuntu-latest
     name: Build docs
@@ -60,6 +61,7 @@ jobs:
         with:
           name: docs-html
           path: docs/build/html/
+
   publish-docs:
     runs-on: ubuntu-latest
     name: Publish docs site
@@ -69,6 +71,8 @@ jobs:
       id-token: write
     steps:
       - name: Publish docs HTML
-        uses: actions/deploy-pages@v4
+        # uses: actions/deploy-pages@v4
+        uses: actions/upload-pages-artifact@v3.0.1
         with:
-          artifact_name: docs-html
+          name: docs-html
+          path: .
