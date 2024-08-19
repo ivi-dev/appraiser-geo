@@ -137,7 +137,7 @@ if __name__ == '__main__': # pragma: no cover
     elif in_cities: # Work on the specified TEXT files
         cities = read_sorted(in_cities)
     else:
-        print('ERROR: Please provide either a CSV or a pair of cities or neighorhood files.')
+        print('ERROR: Please provide either a CSV or a pair of cities or neighborhood files.')
         sys.exit(1)
     cities = map_geo(cities)
     cities = map_neighborhoods(cities, in_neighborhoods)
