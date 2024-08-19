@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docs
-          path: docs
+          path: docs/
   build-docs:
     runs-on: ubuntu-latest
     name: Build docs
@@ -53,12 +53,12 @@ jobs:
         with:
           name: docs
       - name: Build docs
-        run: ls -l && make html
+        run: make html
       - name: Upload docs HTML
         uses: actions/upload-artifact@v4
         with:
           name: docs-html
-          path: docs/build/html
+          path: docs/build/html/
   publish-docs:
     runs-on: ubuntu-latest
     name: Publish docs site
