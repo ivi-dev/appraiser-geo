@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Appraiser Geo documentation &#8212; Appraiser Geo  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Appraiser’s geographic classification" href="geo_classification.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="appraiser-geo-documentation">
+<h1>Appraiser Geo documentation<a class="headerlink" href="#appraiser-geo-documentation" title="Link to this heading">¶</a></h1>
+<p>Appraiser Geo is a program that reads the contents of user-specified
+files containing populated places in Bulgaria and produces their structured
+textual presentation according to the <a class="reference internal" href="geo_classification.html"><span class="doc">Appraiser’s geographic classification</span></a>.</p>
+<section id="example-usage">
+<h2>Example usage<a class="headerlink" href="#example-usage" title="Link to this heading">¶</a></h2>
+<p>Appraiser Geo can work with either a raw CSV file with all geo data combined
+or a set of files with pre-formatted city and neighborhood data. Choose the
+option that suits your case best.</p>
+<p>Following are examples of the two ways to pass data into the program. The end
+result in any case will be the same.</p>
+<p><strong>Option #1</strong>: Passing separate TEXT files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">appraiser_geo</span> <span class="o">--</span><span class="n">cities</span> <span class="s2">&quot;cities.txt&quot;</span> <span class="o">--</span><span class="n">neighborhoods</span> <span class="s2">&quot;neighborhoods.txt&quot;</span> <span class="o">--</span><span class="n">out</span> <span class="s2">&quot;output.json&quot;</span>
+</pre></div>
+</div>
+<p>Assuming content of <em>‘cities.txt’</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Благоевград</span><span class="o">........</span><span class="p">(</span><span class="n">GL1</span><span class="p">:</span> <span class="n">blagoevgrad</span><span class="p">)</span>
+<span class="n">Хаджидимово</span><span class="o">........</span><span class="p">(</span><span class="n">GL1</span><span class="p">:</span> <span class="n">southwestern</span><span class="p">;</span> <span class="n">GL2</span><span class="p">:</span> <span class="n">BLG52</span><span class="p">)</span>
+<span class="n">Якоруда</span><span class="o">............</span><span class="p">(</span><span class="n">GL1</span><span class="p">:</span> <span class="n">southwestern</span><span class="p">;</span> <span class="n">GL2</span><span class="p">:</span> <span class="n">BLG53</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And the content of <em>‘neighborhoods.txt’</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-------------</span>
+<span class="n">Благоевград</span><span class="p">:</span>
+<span class="o">-------------</span>
+
+<span class="n">Струмско</span>
+<span class="n">Ален</span> <span class="n">Мак</span>
+<span class="n">Еленово</span>
+</pre></div>
+</div>
+<p><strong>Scenario #2</strong>: Passing A CSV file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">appraiser_geo</span> <span class="o">--</span><span class="n">csv</span> <span class="s2">&quot;geo.csv&quot;</span> <span class="o">--</span><span class="n">out</span> <span class="s2">&quot;output.json&quot;</span>
+</pre></div>
+</div>
+<p>If we assume the content of the CSV file to be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">geography_level_1</span><span class="p">,</span><span class="n">geography_level_2</span><span class="p">,</span><span class="n">geography_level_2_bg</span>
+<span class="n">blagoevgrad</span><span class="p">,</span><span class="n">Strumsko</span><span class="p">,</span><span class="n">Струмско</span>
+<span class="n">blagoevgrad</span><span class="p">,</span><span class="n">Alen</span> <span class="n">Mak</span><span class="p">,</span><span class="n">Ален</span> <span class="n">Мак</span>
+<span class="n">blagoevgrad</span><span class="p">,</span><span class="n">Elenovo</span><span class="p">,</span><span class="n">Еленово</span>
+<span class="n">southwestern</span><span class="p">,</span><span class="n">BLG52</span><span class="p">,</span><span class="n">Хаджидимово</span>
+<span class="n">outhwestern</span><span class="p">,</span><span class="n">BLG53</span><span class="p">,</span><span class="n">Якоруда</span>
+</pre></div>
+</div>
+<p>The result of both options will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;Благоевград&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;geography&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;level-1&quot;</span><span class="p">:</span> <span class="s2">&quot;blagoevgrad&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;neighborhoods&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;Струмско&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Ален Мак&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Еленово&quot;</span>
+      <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="s2">&quot;Хаджидимово&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;geography&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;level-1&quot;</span><span class="p">:</span> <span class="s2">&quot;southwestern&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;level-2&quot;</span><span class="p">:</span> <span class="s2">&quot;BLG52&quot;</span>
+      <span class="p">}</span>
+   <span class="p">},</span>
+   <span class="s2">&quot;Якоруда&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;geography&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;level-1&quot;</span><span class="p">:</span> <span class="s2">&quot;southwestern&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;level-2&quot;</span><span class="p">:</span> <span class="s2">&quot;BLG53&quot;</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="table-of-contents">
+<h2>Table of contents:<a class="headerlink" href="#table-of-contents" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="geo_classification.html">Appraiser’s geographic classification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geo_classification.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geo_classification.html#getting-the-latest-geo-data">Getting the latest geo data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geo_classification.html#formatting-input-geo-data">Formatting input geo data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_format.html">Data formatting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_format.html#all-geo-csv"><em>All_Geo.csv</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_format.html#cities-txt"><em>Cities.txt</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_format.html#neighborhoods-txt"><em>Neighborhoods.txt</em></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main.py:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="args.html">args.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extractor.html">extractor.py:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="translit.html">translit.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="util.html">util.py</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Appraiser Geo</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="geo_classification.html">Appraiser’s geographic classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_format.html">Data formatting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="geo_classification.html" title="next chapter">Appraiser’s geographic classification</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Iliyan Videv.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

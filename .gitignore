@@ -1,0 +1,4 @@
+.*
+!.coveragerc
+!.gitignore
+__pycache__
