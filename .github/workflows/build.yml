@@ -2,17 +2,47 @@ name: Build app
 run-name: Build app
 
 on: 
-  push:
-    branches:
-      - master
+  workflow_call:
+      inputs:
+          ref:
+              description: >
+                  The branch, tag or SHA to checkout. 
+                  When checking out the repository that
+                  triggered a workflow, this defaults 
+                  to the reference or SHA for that event.
+                  Otherwise, uses the default branch.
+              required: false
+              type: string
+          app_name:
+              description: The name of the build result.
+              required: false
+              default: appraiser-geo
+              type: string
+          linux_artifact_name:
+              description: The name of the Linux build artifact.
+              required: false
+              default: AppraiserGeo-Linux
+              type: string
+          mac_artifact_name:
+              description: The name of the MacOS build artifact.
+              required: false
+              default: AppraiserGeo-MacOS
+              type: string
+          win_artifact_name:
+              description: The name of the Windows build artifact.
+              required: false
+              default: AppraiserGeo-Windows
+              type: string
+          retention_days:
+              description: >
+                The amount of days to keep the resulting build artifacts.
+                Defaults to 7 days.
+              required: false
+              default: 7
+              type: number
 
 env:
-  app-name: appraiser-geo
   build-artifact-if-no-files-found: error
-  build-arfifact-retention-days: 7
-  build-artifact-linux-name: AppraiserGeo-Linux
-  build-artifact-macos-name: AppraiserGeo-MacOS
-  build-artifact-windows-name: AppraiserGeo-Windows
 
 jobs:
   build-linux-app:
@@ -30,14 +60,14 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Run build
-        run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
+        run: pyinstaller src/main.py --onefile --noconfirm --name ${{ inputs.app_name }}
       - name: Upload build artifact
         uses: actions/upload-artifact@v4.3.6
         with:
-          name: ${{ env.build-artifact-linux-name }}
-          path: dist/${{ env.app-name }}
+          name: ${{ inputs.linux_artifact_name }}
+          path: dist/${{ inputs.app_name }}
           if-no-files-found: ${{ env.build-artifact-if-no-files-found }}
-          retention-days: ${{ env.build-arfifact-retention-days }}
+          retention-days: ${{ inputs.retention_days }}
 
   build-mac-app:
     runs-on: macos-latest
@@ -54,14 +84,14 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Run build
-        run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
+        run: pyinstaller src/main.py --onefile --noconfirm --name ${{ inputs.app_name }}
       - name: Upload build artifact
         uses: actions/upload-artifact@v4.3.6
         with:
-          name: ${{ env.build-artifact-macos-name }}
-          path: dist/${{ env.app-name }}
+          name: ${{ inputs.mac_artifact_name }}
+          path: dist/${{ inputs.app_name }}
           if-no-files-found: ${{ env.build-artifact-if-no-files-found }}
-          retention-days: ${{ env.build-arfifact-retention-days }}
+          retention-days: ${{ inputs.retention_days }}
 
   build-mac-win:
     runs-on: windows-latest
@@ -78,11 +108,11 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Run build
-        run: pyinstaller src/main.py --onedir --noconfirm --name ${{ env.app-name }}
+        run: pyinstaller src/main.py --onedir --noconfirm --name ${{ inputs.app_name }}
       - name: Upload build artifact
         uses: actions/upload-artifact@v4.3.6
         with:
-          name: ${{ env.build-artifact-windows-name }}
-          path: dist/${{ env.app-name }}
+          name: ${{ inputs.win_artifact_name }}
+          path: dist/${{ inputs.app_name }}
           if-no-files-found: ${{ env.build-artifact-if-no-files-found }}
-          retention-days: ${{ env.build-arfifact-retention-days }}
+          retention-days: ${{ inputs.retention_days }}

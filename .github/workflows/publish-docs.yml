@@ -2,9 +2,17 @@ name: Publish docs
 run-name: Publish docs
 
 on: 
-  push:
-    branches:
-      - master
+  workflow_call:
+      inputs:
+          ref:
+              description: >
+                  The branch, tag or SHA to checkout. 
+                  When checking out the repository that
+                  triggered a workflow, this defaults 
+                  to the reference or SHA for that event.
+                  Otherwise, uses the default branch.
+              required: false
+              type: string
 
 jobs:
   build-docs:
@@ -14,7 +22,7 @@ jobs:
       - name: Checkout soruce code
         uses: actions/checkout@v4.1.7
         with:
-          ref: master
+          ref: ${{ inputs.ref }}
       - name: Install Python
         uses: actions/setup-python@v5.1.1
         with:

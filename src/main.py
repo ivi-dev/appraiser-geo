@@ -94,7 +94,6 @@ def map_neighborhoods(
             elif delim_start and not delim_end: # City's openning char sequence already encountered
                 if re.match(CITY_DELIM_REGEX, neighborhood): # Mark the end of city name
                     delim_end = True
-                    continue
                 else: # Try to get the city's name
                     city_match = re.match(CITY_NAME_REGEX, neighborhood)
                     if city_match:
