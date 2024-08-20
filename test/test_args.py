@@ -39,7 +39,7 @@ class TestArgs(unittest.TestCase):
                 csv=None,
                 cities='cities.txt', 
                 neighborhoods='neighborhoods.txt', 
-                out='geo.jso'
+                out='geo.json'
             ), 
             prog_args
         )
