@@ -21,7 +21,7 @@ on:
 jobs:
     test:
         runs-on: ubuntu-latest
-        name: Lint source code
+        name: Run tests
         outputs:
             status: ${{ steps.run_tests.outputs.status }}
         steps:
