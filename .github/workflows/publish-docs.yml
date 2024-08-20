@@ -1,5 +1,5 @@
-name: Publish
-run-name: Publish
+name: Docs
+run-name: Docs
 
 on: 
   workflow_call:
