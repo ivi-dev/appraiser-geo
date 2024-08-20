@@ -1,0 +1,5 @@
+![Lint](https://github.com/github/appraiser-geo/actions/workflows/deploy.yml/badge.svg)
+![Test](https://github.com/github/appraiser-geo/actions/workflows/deploy.yml/badge.svg)
+![Docs](https://github.com/github/appraiser-geo/actions/workflows/deploy.yml/badge.svg)
+![Build](https://github.com/github/appraiser-geo/actions/workflows/deploy.yml/badge.svg)
+![Deploy](https://github.com/github/appraiser-geo/actions/workflows/deploy.yml/badge.svg)
