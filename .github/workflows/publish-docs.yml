@@ -79,7 +79,15 @@ jobs:
         with:
           name: docs-html
           path: docs
-      - run: ls -l docs
+      - name: Upload docs site artifact
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          name: docs-site
+          path: docs
+      - name: Deploy docs site
+        uses: actions/deploy-pages@v4.0.5
+        with:
+          artifact_name: docs-site
       # - name: Deploy docs site
       #   uses: actions/deploy-pages@v4.0.5
       #   with:
