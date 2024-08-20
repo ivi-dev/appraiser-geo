@@ -18,6 +18,10 @@ jobs:
         with: 
             ref: ${{ github.ref }}
     docs:
+        permissions:
+            contents: read
+            pages: write
+            id-token: write
         needs: test
         if: ${{ needs.test.outputs.status == 0 }}
         uses: ./.github/workflows/publish-docs.yml
