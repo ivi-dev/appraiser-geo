@@ -26,10 +26,10 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5.1.1
         with:
-          python-version: 3.11.1
+          python-version: 3.11
       - name: Install requirements
         run: pip install -r requirements.txt
-      - name: Start build
+      - name: Run build
         run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
       - name: Upload build artifact
         uses: actions/upload-artifact@v4.3.6
@@ -38,6 +38,7 @@ jobs:
           path: dist/${{ env.app-name }}
           if-no-files-found: ${{ env.build-artifact-if-no-files-found }}
           retention-days: ${{ env.build-arfifact-retention-days }}
+
   build-mac-app:
     runs-on: macos-latest
     name: Build app for Mac
@@ -52,7 +53,7 @@ jobs:
           python-version: 3.11
       - name: Install requirements
         run: pip install -r requirements.txt
-      - name: Start build
+      - name: Run build
         run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
       - name: Upload build artifact
         uses: actions/upload-artifact@v4.3.6
@@ -73,15 +74,15 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5.1.1
         with:
-          python-version: 3.11.1
+          python-version: 3.11
       - name: Install requirements
         run: pip install -r requirements.txt
-      - name: Start build
+      - name: Run build
         run: pyinstaller src/main.py --onedir --noconfirm --name ${{ env.app-name }}
       - name: Upload build artifact
         uses: actions/upload-artifact@v4.3.6
         with:
           name: ${{ env.build-artifact-windows-name }}
-          path: dist/${{ env.app-name }}.exe
+          path: dist/${{ env.app-name }}
           if-no-files-found: ${{ env.build-artifact-if-no-files-found }}
           retention-days: ${{ env.build-arfifact-retention-days }}
