@@ -1,0 +1,62 @@
+name: Build app
+run-name: Build app
+
+on: 
+  push:
+    branches:
+      - master
+
+env:
+  app-name: appraiser-geo
+
+jobs:
+  build-linux-app:
+    runs-on: ubuntu-latest
+    name: Build app for Linux
+    steps:
+      - name: Checkout soruce code
+        uses: actions/checkout@v4.1.7
+        with:
+          ref: master
+      - name: Install Python
+        uses: actions/setup-python@v5.1.1
+        with:
+          python-version: 3.11.1
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      - name: Start build
+        run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
+
+  build-mac-app:
+    runs-on: macos-latest
+    name: Build app for Mac
+    steps:
+      - name: Checkout soruce code
+        uses: actions/checkout@v4.1.7
+        with:
+          ref: master
+      - name: Install Python
+        uses: actions/setup-python@v5.1.1
+        with:
+          python-version: 3.11.1
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      - name: Start build
+        run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
+
+  build-mac-win:
+    runs-on: windows-latest
+    name: Build app for Windows
+    steps:
+      - name: Checkout soruce code
+        uses: actions/checkout@v4.1.7
+        with:
+          ref: master
+      - name: Install Python
+        uses: actions/setup-python@v5.1.1
+        with:
+          python-version: 3.11.1
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      - name: Start build
+        run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
