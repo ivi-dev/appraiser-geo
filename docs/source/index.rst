@@ -24,13 +24,13 @@ result in any case will be the same.
 
    appraiser_geo --cities "cities.txt" --neighborhoods "neighborhoods.txt" --out "output.json"
 
-Assuming content of *'cities.txt'*::
+Assuming the content of *'cities.txt'* is:::
 
    Благоевград........(GL1: blagoevgrad)
    Хаджидимово........(GL1: southwestern; GL2: BLG52)
    Якоруда............(GL1: southwestern; GL2: BLG53)
 
-And the content of *'neighborhoods.txt'*::
+And the content of *'neighborhoods.txt'* is:::
 
    -------------
    Благоевград:
@@ -40,7 +40,7 @@ And the content of *'neighborhoods.txt'*::
    Ален Мак
    Еленово
 
-**Scenario #2**: Passing A CSV file::
+**Scenario #2**: Passing a single CSV file::
 
    appraiser_geo --csv "geo.csv" --out "output.json"
 
