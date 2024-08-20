@@ -117,10 +117,7 @@ def map_neighborhoods(
 
 
 def write_cities_json(cities: Mapping[str, City], path: str) -> None:
-    """
-    Write a JSON dump of the specified ``cities`` to a 
-    file at ``path``.
-    """
+    
 
     with open(path, 'wt', encoding='utf8') as file:
         file.write(json.dumps(cities, indent=4, ensure_ascii=False))
