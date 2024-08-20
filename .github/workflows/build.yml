@@ -10,10 +10,9 @@ env:
   app-name: appraiser-geo
   build-artifact-if-no-files-found: error
   build-arfifact-retention-days: 7
-  build-artifact-base-name: AppraiserGeo
-  build-artifact-linux-name: ${{ env.build-artifact-base-name }}-Linux
-  build-artifact-macos-name: ${{ env.build-artifact-base-name }}-MacOS
-  build-artifact-windows-name: ${{ env.build-artifact-base-name }}-Windows
+  build-artifact-linux-name: AppraiserGeo-Linux
+  build-artifact-macos-name: AppraiserGeo-MacOS
+  build-artifact-windows-name: AppraiserGeo-Windows
 
 jobs:
   build-linux-app:
