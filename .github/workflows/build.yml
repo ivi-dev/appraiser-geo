@@ -1,5 +1,5 @@
-name: Build app
-run-name: Build app
+name: Build
+run-name: Build
 
 on: 
   workflow_call:
