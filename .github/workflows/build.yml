@@ -26,6 +26,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Start build
         run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
+      - run: ls -l dist
 
   build-mac-app:
     runs-on: macos-latest
@@ -43,6 +44,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Start build
         run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
+      - run: ls -l dist
 
   build-mac-win:
     runs-on: windows-latest
@@ -60,3 +62,4 @@ jobs:
         run: pip install -r requirements.txt
       - name: Start build
         run: pyinstaller src/main.py --onefile --noconfirm --name ${{ env.app-name }}
+      - run: ls -l dist
