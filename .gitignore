@@ -1,6 +1,7 @@
 .*
 !.coveragerc
 !.gitignore
+!.github
 *.spec
 __pycache__
 build
