@@ -22,7 +22,7 @@ result in any case will be the same.
 
 **Option #1**: Passing separate TEXT files::
 
-   appraiser_geo --cities "cities.txt" --neighborhoods "neighborhoods.txt" --out "output.json"
+   appraiser-geo --cities "cities.txt" --neighborhoods "neighborhoods.txt" --out "output.json"
 
 Assuming the content of *'cities.txt'* is:::
 
@@ -42,7 +42,7 @@ And the content of *'neighborhoods.txt'* is:::
 
 **Scenario #2**: Passing a single CSV file::
 
-   appraiser_geo --csv "geo.csv" --out "output.json"
+   appraiser-geo --csv "geo.csv" --out "output.json"
 
 If we assume the content of the CSV file to be::
 

@@ -44,7 +44,7 @@ option that suits your case best.</p>
 <p>Following are examples of the two ways to pass data into the program. The end
 result in any case will be the same.</p>
 <p><strong>Option #1</strong>: Passing separate TEXT files:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">appraiser_geo</span> <span class="o">--</span><span class="n">cities</span> <span class="s2">&quot;cities.txt&quot;</span> <span class="o">--</span><span class="n">neighborhoods</span> <span class="s2">&quot;neighborhoods.txt&quot;</span> <span class="o">--</span><span class="n">out</span> <span class="s2">&quot;output.json&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">appraiser</span><span class="o">-</span><span class="n">geo</span> <span class="o">--</span><span class="n">cities</span> <span class="s2">&quot;cities.txt&quot;</span> <span class="o">--</span><span class="n">neighborhoods</span> <span class="s2">&quot;neighborhoods.txt&quot;</span> <span class="o">--</span><span class="n">out</span> <span class="s2">&quot;output.json&quot;</span>
 </pre></div>
 </div>
 <p>Assuming the content of <em>‘cities.txt’</em> is::</p>
@@ -64,7 +64,7 @@ result in any case will be the same.</p>
 </pre></div>
 </div>
 <p><strong>Scenario #2</strong>: Passing a single CSV file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">appraiser_geo</span> <span class="o">--</span><span class="n">csv</span> <span class="s2">&quot;geo.csv&quot;</span> <span class="o">--</span><span class="n">out</span> <span class="s2">&quot;output.json&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">appraiser</span><span class="o">-</span><span class="n">geo</span> <span class="o">--</span><span class="n">csv</span> <span class="s2">&quot;geo.csv&quot;</span> <span class="o">--</span><span class="n">out</span> <span class="s2">&quot;output.json&quot;</span>
 </pre></div>
 </div>
 <p>If we assume the content of the CSV file to be:</p>
