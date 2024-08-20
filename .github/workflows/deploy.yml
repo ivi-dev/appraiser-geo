@@ -13,7 +13,6 @@ jobs:
             ref: ${{ github.ref }}
     test:
         needs: lint
-        if: ${{ needs.lint.outputs.status == 0 }}
         uses: ./.github/workflows/test.yml
         with: 
             ref: ${{ github.ref }}
@@ -23,13 +22,11 @@ jobs:
             pages: write
             id-token: write
         needs: test
-        if: ${{ needs.test.outputs.status == 0 }}
         uses: ./.github/workflows/publish-docs.yml
         with: 
             ref: ${{ github.ref }}
     build:
         needs: test
-        if: ${{ needs.test.outputs.status == 0 }}
         uses: ./.github/workflows/build.yml
         with: 
             ref: ${{ github.ref }}

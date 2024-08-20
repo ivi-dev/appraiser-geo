@@ -13,17 +13,11 @@ on:
                     Otherwise, uses the default branch.
                 required: false
                 type: string
-        outputs:
-            status:
-                description: The lint job's exit status
-                value: ${{ jobs.lint.outputs.status }}
 
 jobs:
     lint:
         runs-on: ubuntu-latest
         name: Lint source code
-        outputs:
-            status: ${{ steps.run_linter.outputs.status }}
         steps:
             - name: Checkout source code
               uses: actions/checkout@v4
@@ -37,6 +31,4 @@ jobs:
               run: pip install -r requirements.txt
             - name: Run linter
               id: run_linter
-              run: |
-                pylint src
-                echo "status=$?" >> "$GITHUB_OUTPUT" 
+              run: pylint src
