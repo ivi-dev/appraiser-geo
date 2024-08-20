@@ -1,0 +1,31 @@
+name: Deploy
+run-name: Deploy
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+    lint:
+        uses: ./.github/workflows/lint.yml
+        with: 
+            ref: ${{ github.ref }}
+    test:
+        needs: lint
+        if: ${{ needs.lint.outputs.status == 0 }}
+        uses: ./.github/workflows/test.yml
+        with: 
+            ref: ${{ github.ref }}
+    docs:
+        needs: test
+        if: ${{ needs.test.outputs.status == 0 }}
+        uses: ./.github/workflows/publish-docs.yml
+        with: 
+            ref: ${{ github.ref }}
+    build:
+        needs: test
+        if: ${{ needs.test.outputs.status == 0 }}
+        uses: ./.github/workflows/build.yml
+        with: 
+            ref: ${{ github.ref }}
