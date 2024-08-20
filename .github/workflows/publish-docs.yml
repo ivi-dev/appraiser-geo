@@ -55,7 +55,7 @@ jobs:
           name: docs
           path: docs
       - name: Build docs
-        run: ls -l && make html
+        run: make html
       - name: Upload docs HTML
         uses: actions/upload-artifact@v4
         with:
@@ -74,10 +74,17 @@ jobs:
     #   name: github-pages
     #   url: ${{ steps.docs-deployment.outputs.page_url }}
     steps:
-      - name: Deploy docs site
-        uses: actions/deploy-pages@v4.0.5
+      - name: Download docs HTML
+        uses: actions/download-artifact@v4
         with:
-          artifact_name: docs-html
+          name: docs-html
+          path: docs
+      - run: ls -l docs
+      # - name: Deploy docs site
+      #   uses: actions/deploy-pages@v4.0.5
+      #   with:
+      #     artifact_name: docs-html
+      
       # - name: Configure GitHub Pages
       #   uses: actions/configure-pages@v3
       # - name: Upload docs site artifact
