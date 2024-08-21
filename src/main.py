@@ -70,14 +70,14 @@ def map_neighborhoods(
     """
     Map each of the ``cities`` to its neighborhoods.
 
-    If ``neighborhoods`` is a string, a city's neighborhoods 
-    are derived from the file at ``neighborhood_path``. 
-    The file is treated as a flat text one and its content is 
-    expected to be formatted acccording to the 
-    :doc:`data_format` guidelines.
+    If ``neighborhoods`` is a string, it's assumed that
+    it's a file path, and the city's neighborhoods will 
+    be derived from it. The file will be treated as a flat 
+    text one and its content is expected to be formatted 
+    acccording to the :doc:`data_format` guidelines.
 
     If ``neighborhoods`` is a map, then its expected to contain
-    lists of the associated cities' neighborhoods. 
+    city names mapped to their associated neighborhood lists. 
     """
 
     if isinstance(neighborhoods, str): # File path provided
@@ -118,8 +118,8 @@ def map_neighborhoods(
 
 def write_cities_json(cities: Mapping[str, City], path: str) -> None:
     """
-    Write a JSON dump of the specified ``cities`` to a 
-    file at ``path``.
+    Write a JSON dump of the specified ``cities`` data
+    to a file at ``path``.
     """
 
     with open(path, 'wt', encoding='utf8') as file:
