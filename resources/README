@@ -1,1 +1,5 @@
-This directory contains program input files that can be used for test-running the program to inspect and verify the results if required. Consult the program's decumentation for help on what these files' significance is and how to pass them into the program.
+This directory contains program input files that can be used for running the program to inspect and verify its output if required. 
+When the program is run by a utility script (located in the "scripts" directory), the generated output is also saved in this directory. 
+
+Consult the program's documentation for help on what these files' significance is, how to pass them into the program and what output
+to expect out of the program.
