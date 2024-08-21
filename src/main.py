@@ -139,8 +139,9 @@ if __name__ == '__main__': # pragma: no cover
     else:
         print(
             'ERROR: Please provide either a CSV or a '
-            'pair of cities or neighborhood files. '
-            'For help run the program with the -h option.'
+            'pair of cities and neighborhood files. '
+            'If you need help, run the program with the '
+            '-h option.'
         )
         sys.exit(1)
     cities_ = map_geo(cities_)
