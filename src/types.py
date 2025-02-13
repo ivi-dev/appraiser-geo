@@ -13,27 +13,41 @@ Geo = dict[str, str]
 # A city's neighborhoods
 Neigborhoods = Iterable[str]
 
-# GeoJSON polygon data
-Polygons = tuple[tuple[float, float], ...]
+# A lat/lon coordinate pair
+LatLon = tuple[float, float]
+
+# A polygon ring, either "inner" or "outer".
+# Check https://stevage.github.io/geojson-spec/#section-3.1.6 
+# for details
+PolygonRing = tuple[LatLon, ...]
+
+# GeoJSON polygon data, consisting of one or more "rings".
+# Check https://stevage.github.io/geojson-spec/#section-3.1.6 
+# for details
+Polygons = tuple[PolygonRing, ...]
+
+# A data structure mapping certain city/town/neighborhood
+# to its polygons, as published in a GeoJSON-formatted file
+RawPolygonDataItem = dict[str, Geo | Polygons]
 
 # A data structure mapping certain cities/town/neighborhoods
-# to their GeoJSON polygons
-RawPolygons = Iterable[dict[str, Geo | Polygons]]
+# to their polygons, as published in a GeoJSON-formatted file
+RawPolygonData = Iterable[RawPolygonDataItem]
 
 # A city's neighborhoods, enriched with their 
 # (GeoJSON) polygons data
-GeoNeigborhoods = Iterable[dict[str, Polygons]]
+GeoNeigborhoods = Iterable[dict[str, str | Polygons]]
 
 # A city/town mapped to its geography level 1 and (possibly) 
 # 2 info only
-PartialCity = dict[str, Geo]
+GeoCity = dict[str, Geo]
 
 # A city/town mapped to its geography level 1 and (possibly) 
-# 2 and neighborhoods
-City = dict[str, Geo | Neigborhoods]
+# 2 and partitioned into neighborhoods
+PartitionedCity = dict[str, Geo | Neigborhoods]
 
 # A city/town mapped to its entire geo data - geography 
 # level 1 and (possibly) 2, neighborhoods and polygons.
 # Here, the city/town's neighborhoods are mapped to their 
 # own polygon data too.
-GeoCity = dict[str, Geo | GeoNeigborhoods | Polygons]
+FullCity = dict[str, Geo | GeoNeigborhoods | Polygons]

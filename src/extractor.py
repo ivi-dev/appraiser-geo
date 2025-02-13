@@ -9,7 +9,7 @@ from typing import Iterable, Mapping
 
 from src.constants import ALL, NEIGHBORHOODS_KEY
 from src.translit import Transliterator
-from src.types import City
+from src.types import PartitionedCity
 
 # Regex
 AREA_GROUP = 'area'
@@ -90,7 +90,7 @@ def extract_geo_data(path: str) -> GeoSplit:
     return split_geo_data(data)
 
 
-def split_geo_data(data: Mapping[str, City]) -> GeoSplit:
+def split_geo_data(data: Mapping[str, PartitionedCity]) -> GeoSplit:
     """
     Split the provided geo ``data`` into a 2-tuple containing
     city and neighborhood data respectively. The cities are 
