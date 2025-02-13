@@ -36,9 +36,10 @@ def parser() -> argparse.ArgumentParser:
     )
     arg_parser.add_argument(
         '--polygons', 
-        help='Path to a GEOJSON file containing data about the cities/towns\' '
-             'and neighborhoods\' geographic bounds, normally expressed as '
-             'polygons drawn on a map.'
+        nargs='*',
+        help='Path(s) to one or more GEOJSON file(s) containing data about the '
+             'cities, towns\' and neighborhoods\' geographic bounds (polygons), '
+             'normally expressed as polygons drawn on a map.'
     )
     arg_parser.add_argument(
         '--out', 
