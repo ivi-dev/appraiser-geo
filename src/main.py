@@ -13,7 +13,7 @@ import sys
 from typing import Iterable, Mapping
 
 from src.constants import ALL
-from src.types import City, PartialCity
+from src.types import PartialCity, City, GeoCity, RawPolygons
 
 from src.util import read_sorted, sort_neighborhoods
 from src.args import parse as parse_args
@@ -116,6 +116,30 @@ def map_neighborhoods(
     return cities
 
 
+def map_polygons(
+    places: Mapping[str, City], 
+    polygons: str
+) -> Mapping[str, GeoCity]:
+    """
+    Map each of the ``places`` to its GeoJSON polygons.
+
+    If ``polygons`` is a string, it's assumed that
+    it's a file path, and the polygon data will 
+    be derived from it.
+    """
+
+    pass
+
+
+def get_ploygons(path: str) -> RawPolygons:
+    """
+    Parse and return the polygon data contained in the
+    GeoJSON file at ``path``.
+    """
+
+    pass
+
+
 def write_cities_json(cities: Mapping[str, City], path: str) -> None:
     """
     Write a JSON dump of the specified ``cities`` data
@@ -131,6 +155,7 @@ if __name__ == '__main__': # pragma: no cover
     in_csv = prog_args.csv
     in_cities = prog_args.cities
     in_neighborhoods = prog_args.neighborhoods
+    in_polygons = prog_args.polygons
     out_path = prog_args.out
     if in_csv: # Work on the specified CSV file
         cities_, in_neighborhoods = extract_geo_data(in_csv)
@@ -146,5 +171,6 @@ if __name__ == '__main__': # pragma: no cover
         sys.exit(1)
     cities_ = map_geo(cities_)
     cities_ = map_neighborhoods(cities_, in_neighborhoods)
+    cities_ = map_polygons(cities_, in_polygons)
     cities_ = sort_neighborhoods(cities_)
     write_cities_json(cities_, out_path)
