@@ -10,10 +10,11 @@ level(s) and constituent areas.
 import re
 import json
 import sys
-from typing import Iterable, Mapping
+from typing import Iterable, Mapping, Optional
 
-from src.constants import ALL
-from src.types import GeoCity, PartitionedCity, FullCity, RawPolygonData, RawPolygonDataItem
+from src.constants import ALL, DEFAULT_ALL
+from src.types import GeoCity, PartitionedCity, FullCity, \
+                      RawPolygonData, RawPolygonDataItem, Polygons
 
 from src.util import read_sorted, sort_neighborhoods
 from src.args import parse as parse_args
@@ -106,7 +107,7 @@ def map_neighborhoods(
                     continue
                 neighborhood = neighborhood.strip()
                 if neighborhood != '': # The neighborhood's name
-                    neighborhood_ = f'--{neighborhood.title()}--' if \
+                    neighborhood_ = DEFAULT_ALL if \
                                     neighborhood.lower() == ALL.lower() else \
                                     neighborhood
                     cities[city_name][NEIGHBORHOODS_KEY].append(neighborhood_)
@@ -128,130 +129,124 @@ def map_polygons(
     data will be derived from them.
     """
 
-    def place_matches(
-        place: RawPolygonDataItem,
-        places: Mapping[str, PartitionedCity],
-        place_name: str
-    ) -> bool:
-        """
-        Return whether the specified ``place`` matches 
-        the specified ``geo_level_1`` and optionally 
-        ``geo_level_2`` and ``geo_level_2_bg``.
-        """
-
-        geo_level_1 = places[place_name]['geography']['level-1']
-        geo_level_2 = places[place_name]['geography']['level-2'] if \
-                     'level-2' in places[place_name]['geography'] else \
-                     None
-        geo_level_2_bg = place_name
-
-        # What props exist on this polygon data item
-        poly_place_has_level_2 = 'level-2' in place['geo']
-        poly_place_has_level_2_bg = 'level-2-bg' in place['geo']
-
-        # Matches by various props
-        level_1_match = place['geo']['level-1'] == geo_level_1
-        level_2_match = True
-        level_2_bg_match = True
-        
-        # Match on various props conditionally
-        if poly_place_has_level_2:
-            level_2_match = place['geo']['level-2'] == geo_level_2
-        if poly_place_has_level_2_bg:
-            level_2_bg_match = place['geo']['level-2-bg'] == geo_level_2_bg
-
-        if geo_level_2_bg == 'Аврен':
-            print(geo_level_1, geo_level_2, geo_level_2_bg)
-         
-        # A match means all props (if exist) match
-        return level_1_match and level_2_match and level_2_bg_match
-    
     def find_polygon_data(
-        data: RawPolygonData,
-        places: Mapping[str, PartitionedCity],
-        place_name: str
-    ) -> RawPolygonDataItem:
+        level_1: str,
+        level_2: Optional[str]
+    ) -> tuple[RawPolygonDataItem, int]:
         """
-        Return the polygon data item of the place identified 
-        by the specified ``geo_level_1``, ``geo_level_2`` 
-        and ``geo_level_2_bg``.
+        Return a two-tuple of the raw polygon data item matching
+        the specified ``level_1`` and ``level_2``, and the index
+        of that item in ``polygons_``.
         """
 
-        # return filter(
-        #     lambda place: place_matches(
-        #         place,
-        #         places,
-        #         place_name
-        #     ),
-        #     data
-        # )
-        for poly in data:
-            place = places[place_name]
-
-    polygons_ = get_polygons(*polygon_paths)
-    mapped_polys = [] # Indices of mapped polygons
-    for place_name, place_data in places.items():
-        # Find this place's polygon data
-        level_1 = place_data['geography']['level-1']
-        level_2 = place_data['geography']['level-2'] if \
-                  'level-2' in place_data['geography'] else \
-                  None
         idx = 0
         for poly_data in polygons_:
             if poly_data['geo']['level-1'] == level_1:
                 if 'level-2' in poly_data['geo']:
                     if poly_data['geo']['level-2'] == level_2:
-                        place_data['polygons'] = poly_data['coordinates']
-                        mapped_polys.append(idx)
-                        break
+                        return poly_data, idx
             idx += 1
 
-    # Get the polygons still not mapped to places
-    not_mapped_polys = []
-    for i, poly in enumerate(polygons_):
-        if i not in mapped_polys:
-            not_mapped_polys.append(poly)
+    def get_unmapped_polygons() -> Iterable[RawPolygonDataItem]:
+        """
+        Return the polygon data items that still
+        haven't been mapped to places.
+        """
+
+        unmapped_polys = []
+        for i, poly in enumerate(polygons_):
+            if i not in mapped_polys:
+                unmapped_polys.append(poly)
+        return unmapped_polys
     
-    # Get the still unmapped neighborhoods
-    neigh = {}
-    for poly in not_mapped_polys:
-        lvl_1 = poly['geo']['level-1']
-        if 'level-2' in poly['geo']:
-            lvl_2 = poly['geo']['level-2']
-            if lvl_1 not in neigh:
-                neigh[lvl_1] = []
-            else:
-                neigh[lvl_1].append(lvl_2)
-    # TODO: Map them...
+    def get_unmapped_neighborhoods() -> \
+        Mapping[str, Iterable[Mapping[str, str | Polygons]]]:
+        """
+        Return a map of the cities, identified by their level 
+        1 geo's and their neighborhoods that haven't still been
+        mapped to polygons.
+        """
 
-    print(
-        'STILL UNMAPPED NEIGHBORHOODS', 
-        json.dumps(neigh, indent=4)
-    )
-    print(
-        'STILL UNMAPPED NEIGHBORHOODS', 
-        json.dumps(
-            [
-                {
-                    'city': neigh_, 
-                    'neighborhoods': len(neigh[neigh_])
-                } 
-                for neigh_ 
-                in neigh
-            ], 
-            indent=4
-        )
-    )
+        unmapped_neighborhoods = {}
+        for poly in unmapped_polys:
+            lvl_1 = poly['geo']['level-1']
+            if 'level-2' in poly['geo']:
+                lvl_2 = poly['geo']['level-2']
+                lvl_2_bg = poly['geo']['level-2-bg']
+                neigh = {
+                    'name': lvl_2_bg, 
+                    'polygons': poly['coordinates']
+                }
+                if lvl_2 != 'all':
+                    if lvl_1 not in unmapped_neighborhoods:
+                        unmapped_neighborhoods[lvl_1] = [neigh]
+                    else:
+                        unmapped_neighborhoods[lvl_1].append(neigh)
+        # Sort the neighborhoods
+        for city_lvl_1 in unmapped_neighborhoods:
+            unmapped_neighborhoods[city_lvl_1] = sorted(
+                unmapped_neighborhoods[city_lvl_1],
+                key=lambda city: city['name']
+            )
+        return unmapped_neighborhoods
 
-    # Get the still unmapped areas
+    def map_neighborhoods_to_polygons():
+        """
+        Map the still unmapped neighborhoods to their
+        poylgons.
+        """
+
+        for city_lvl_1 in unmapped_neighborhoods:
+            for _, place_data in places.items():
+                # Common case: There's a match on geo level 1
+                if place_data['geography']['level-1'] == city_lvl_1:
+                    place_data['neighborhoods'] = unmapped_neighborhoods[city_lvl_1]
+                else:
+                    neigh_names = [
+                        neigh['name'] 
+                        for neigh 
+                        in unmapped_neighborhoods[city_lvl_1]
+                    ]
+                    # Edge case for "Велико Търново": There's no match on geo level 1
+                    if 'neighborhoods' in place_data and \
+                        not isinstance(place_data['neighborhoods'][0], dict):
+                        # Check the neighborhood lists for being "close enough" -
+                        # there's only one excess item "Select All" in the places
+                        # record's list, the other items are the same
+                        neigh_list_identical = list(
+                            set(place_data['neighborhoods']) - set(neigh_names)
+                        )[0] == DEFAULT_ALL
+                        if neigh_list_identical:
+                            place_data['neighborhoods'] = unmapped_neighborhoods[city_lvl_1]
+                            break
+
+    polygons_ = get_polygons(*polygon_paths)
+    mapped_polys = [] # Contains the indices of mapped polygon data items
+    for _, place_data in places.items():
+        level_1 = place_data['geography']['level-1']
+        level_2 = place_data['geography']['level-2'] if \
+                  'level-2' in place_data['geography'] else \
+                  None
+        data = find_polygon_data(level_1, level_2)
+        if data is not None:
+            poly, idx = data[0], data[1]
+            place_data['polygons'] = poly['coordinates']
+            mapped_polys.append(idx)
+    unmapped_polys = get_unmapped_polygons()
+    unmapped_neighborhoods = get_unmapped_neighborhoods()
+    map_neighborhoods_to_polygons()
+
+    # TODO: Get the still unmapped WHOLE CITIES...
+
+    # Get the still unmapped AREAS
     areas = []
-    for poly in not_mapped_polys:
+    for poly in unmapped_polys:
         lvl_1 = poly['geo']['level-1']
-        if lvl_1 not in neigh:
+        if lvl_1 not in unmapped_neighborhoods:
             areas.append(lvl_1)
     # TODO: Map them...
 
-    print('STILL UNMAPPED AREAS', json.dumps(areas, indent=4))
+    # print('STILL UNMAPPED AREAS', json.dumps(areas, indent=4))
 
     return places
 
@@ -276,6 +271,8 @@ def get_polygons(*paths: str) -> RawPolygonData:
             }
             if 'geography_level_2' in feature['properties']:
                 data['geo']['level-2'] = feature['properties']['geography_level_2']
+            if 'geography_level_2_bg' in feature['properties']:
+                data['geo']['level-2-bg'] = feature['properties']['geography_level_2_bg']
             polygons.append(data)
     return polygons
 
@@ -313,8 +310,8 @@ if __name__ == '__main__': # pragma: no cover
     cities_ = map_neighborhoods(cities_, in_neighborhoods)
     cities_ = map_polygons(cities_, in_polygons)
 
-    # with open('C:\\users\\iliyanvidev\\desktop\\out-full-places.json', 'wt', encoding='utf8') as file:
-    #     file.write(json.dumps(cities_, indent=4, ensure_ascii=False))
+    with open('C:\\users\\iliyanvidev\\desktop\\out-places.json', 'wt', encoding='utf8') as file:
+        file.write(json.dumps(cities_, indent=4, ensure_ascii=False))
 
     # cities_ = sort_neighborhoods(cities_)
     # write_cities_json(cities_, out_path)
