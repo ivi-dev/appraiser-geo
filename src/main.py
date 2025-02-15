@@ -13,7 +13,6 @@ import sys
 from typing import Iterable, Mapping, Optional
 
 from src.constants import ALL, DEFAULT_ALL
-from src.translit import Transliterator
 from src.types import GeoCity, PartitionedCity, FullCity, \
                       RawPolygonData, RawPolygonDataItem, Polygons
 
@@ -38,6 +37,16 @@ CITY_NAME_REGEX = f'^(?P<{CITY_NAME_GROUP}>.+):$'
 GEO_KEY = 'geography'
 GEO_LEVEL_1_KEY = 'level-1'
 GEO_LEVEL_2_KEY = 'level-2'
+
+# Misc
+AREA_NAMES = {
+    'northwestern': 'Северозападна България',
+    'northcentral': 'Северна България',
+    'northeastern': 'Североизточна България',
+    'southwestern': 'Югозападна България',
+    'southcentral': 'Южна България',
+    'southeastern': 'Югоизточна България',
+}
 
 
 def map_geo(cities: Iterable[str]) -> Mapping[str, GeoCity]:
@@ -191,17 +200,68 @@ def map_polygons(
             )
         return unmapped_neighborhoods
 
+    def map_areas_to_polygons():
+        """
+        Map the geographical area to theur polygons.
+        """
+
+        for poly in unmapped_polys:
+            clean_name = poly['geo']['level-1'].replace('_', ' ').title()
+            place_name = transliter.translit(clean_name)
+            is_area = poly['geo']['level-1'] not in cities \
+                    and place_name not in cities
+            if 'level-2' not in poly['geo'] and is_area: # It's an AREA
+                places[AREA_NAMES[poly['geo']['level-1']]] = {
+                    'geography': {
+                        'level-1': poly['geo']['level-1']
+                    },
+                    'polygons': poly['coordinates'],
+                    'is_city_or_town': False
+                }
+                break
+
+    def map_cities_to_polygons():
+        """
+        Map the still unmapped whole cities (those without neighborhoods 
+        listed in the raw polygon data) to their poylgons.
+        """
+
+        for poly in unmapped_polys:
+            clean_name = poly['geo']['level-1'].replace('_', ' ').title()
+            place_name = transliter.translit(clean_name)
+            is_city = poly['geo']['level-1'] in cities or place_name in cities
+            if 'level-2' not in poly['geo'] and is_city: # It's a CITY
+                for _, data in places.items(): # Add that city's polygons
+                    if data['geography']['level-1'] == poly['geo']['level-1']:
+                        data['polygons'] = poly['coordinates']
+                        break
+
+    def map_towns_to_polygons():
+        """
+        Map towns to their polygons.
+        """
+
+        for _, place_data in places.items():
+            level_1 = place_data['geography']['level-1']
+            level_2 = place_data['geography']['level-2'] if \
+                    'level-2' in place_data['geography'] else \
+                    None
+            data = find_polygon_data(level_1, level_2)
+            if data is not None:
+                poly, idx = data[0], data[1]
+                place_data['polygons'] = poly['coordinates']
+                mapped_polys.append(idx)
+
     def map_neighborhoods_to_polygons():
         """
         Map the still unmapped neighborhoods to their poylgons.
         """
 
-        for idx, city_lvl_1 in enumerate(unmapped_neighborhoods):
+        for city_lvl_1 in unmapped_neighborhoods:
             for place_name, place_data in places.items():
                 # COMMON CASE: There's a match on geo level 1
                 if place_data['geography']['level-1'] == city_lvl_1:
                     place_data['neighborhoods'] = unmapped_neighborhoods[city_lvl_1]
-                    mapped_neighborhoods.append(idx)
                     cities.append(place_data['geography']['level-1'])
                 else:
                     # The still unmapped neighborhoods' names
@@ -224,57 +284,18 @@ def map_polygons(
                         if neigh_list_identical:
                             place_data['neighborhoods'] = \
                                 unmapped_neighborhoods[city_lvl_1]
-                            mapped_neighborhoods.append(idx)
                             cities.append(place_name)
                             break
 
-    def map_whole_cities_to_polygons():
-        """
-        Map the still unmapped whole cities (those without neighborhoods 
-        listed in the raw polygon data) to their poylgons.
-        """
-
-        for poly in unmapped_polys:
-            clean_name = poly['geo']['level-1'].replace('_', ' ').title()
-            place_name = transliter.translit(clean_name)
-            is_city = poly['geo']['level-1'] in cities or place_name in cities
-            if 'level-2' not in poly['geo'] and is_city: # It's a city
-                for _, data in places.items(): # Add that city's polygons
-                    if data['geography']['level-1'] == poly['geo']['level-1']:
-                        data['polygons'] = poly['coordinates']
-                        break
-
     polygons_ = get_raw_polygon_data(*polygon_paths)
-    mapped_polys = [] # Contains the indices of mapped polygon data items
-    for _, place_data in places.items():
-        level_1 = place_data['geography']['level-1']
-        level_2 = place_data['geography']['level-2'] if \
-                  'level-2' in place_data['geography'] else \
-                  None
-        data = find_polygon_data(level_1, level_2)
-        if data is not None:
-            poly, idx = data[0], data[1]
-            place_data['polygons'] = poly['coordinates']
-            mapped_polys.append(idx)
+    mapped_polys = [] # Indices of mapped polygons
+    map_towns_to_polygons()
     unmapped_polys = get_unmapped_polygons()
     unmapped_neighborhoods = get_unmapped_neighborhoods()
-    mapped_neighborhoods = []
-    cities = []
+    cities = [] # City geo level 1's or Cyrillic names
     map_neighborhoods_to_polygons()
-    map_whole_cities_to_polygons()
-
-    # print(len(unmapped_neighborhoods))
-
-    # Get the still unmapped AREAS (northeastern, southwestern, etc.)
-    areas = []
-    for poly in unmapped_polys:
-        lvl_1 = poly['geo']['level-1']
-        if lvl_1 not in unmapped_neighborhoods:
-            areas.append(lvl_1)
-    # TODO: Map them...
-
-    # print('STILL UNMAPPED AREAS', json.dumps(areas, indent=4))
-
+    map_cities_to_polygons()
+    map_areas_to_polygons()
     return places
 
 
