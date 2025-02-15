@@ -13,6 +13,7 @@ import sys
 from typing import Iterable, Mapping, Optional
 
 from src.constants import ALL, DEFAULT_ALL
+from src.translit import Transliterator
 from src.types import GeoCity, PartitionedCity, FullCity, \
                       RawPolygonData, RawPolygonDataItem, Polygons
 
@@ -192,35 +193,58 @@ def map_polygons(
 
     def map_neighborhoods_to_polygons():
         """
-        Map the still unmapped neighborhoods to their
-        poylgons.
+        Map the still unmapped neighborhoods to their poylgons.
         """
 
-        for city_lvl_1 in unmapped_neighborhoods:
-            for _, place_data in places.items():
-                # Common case: There's a match on geo level 1
+        for idx, city_lvl_1 in enumerate(unmapped_neighborhoods):
+            for place_name, place_data in places.items():
+                # COMMON CASE: There's a match on geo level 1
                 if place_data['geography']['level-1'] == city_lvl_1:
                     place_data['neighborhoods'] = unmapped_neighborhoods[city_lvl_1]
+                    mapped_neighborhoods.append(idx)
+                    cities.append(place_data['geography']['level-1'])
                 else:
+                    # The still unmapped neighborhoods' names
                     neigh_names = [
                         neigh['name'] 
                         for neigh 
                         in unmapped_neighborhoods[city_lvl_1]
                     ]
-                    # Edge case for "Велико Търново": There's no match on geo level 1
+                    # EDGE CASE for "Велико Търново": There's no match on geo level 1
                     if 'neighborhoods' in place_data and \
                         not isinstance(place_data['neighborhoods'][0], dict):
                         # Check the neighborhood lists for being "close enough" -
                         # there's only one excess item "Select All" in the places
                         # record's list, the other items are the same
-                        neigh_list_identical = list(
+                        neigh_diff = list(
                             set(place_data['neighborhoods']) - set(neigh_names)
-                        )[0] == DEFAULT_ALL
+                        )
+                        neigh_list_identical = len(neigh_diff) == 1 and \
+                                               neigh_diff[0] == DEFAULT_ALL
                         if neigh_list_identical:
-                            place_data['neighborhoods'] = unmapped_neighborhoods[city_lvl_1]
+                            place_data['neighborhoods'] = \
+                                unmapped_neighborhoods[city_lvl_1]
+                            mapped_neighborhoods.append(idx)
+                            cities.append(place_name)
                             break
 
-    polygons_ = get_polygons(*polygon_paths)
+    def map_whole_cities_to_polygons():
+        """
+        Map the still unmapped whole cities (those without neighborhoods 
+        listed in the raw polygon data) to their poylgons.
+        """
+
+        for poly in unmapped_polys:
+            clean_name = poly['geo']['level-1'].replace('_', ' ').title()
+            place_name = transliter.translit(clean_name)
+            is_city = poly['geo']['level-1'] in cities or place_name in cities
+            if 'level-2' not in poly['geo'] and is_city: # It's a city
+                for _, data in places.items(): # Add that city's polygons
+                    if data['geography']['level-1'] == poly['geo']['level-1']:
+                        data['polygons'] = poly['coordinates']
+                        break
+
+    polygons_ = get_raw_polygon_data(*polygon_paths)
     mapped_polys = [] # Contains the indices of mapped polygon data items
     for _, place_data in places.items():
         level_1 = place_data['geography']['level-1']
@@ -234,11 +258,14 @@ def map_polygons(
             mapped_polys.append(idx)
     unmapped_polys = get_unmapped_polygons()
     unmapped_neighborhoods = get_unmapped_neighborhoods()
+    mapped_neighborhoods = []
+    cities = []
     map_neighborhoods_to_polygons()
+    map_whole_cities_to_polygons()
 
-    # TODO: Get the still unmapped WHOLE CITIES...
+    # print(len(unmapped_neighborhoods))
 
-    # Get the still unmapped AREAS
+    # Get the still unmapped AREAS (northeastern, southwestern, etc.)
     areas = []
     for poly in unmapped_polys:
         lvl_1 = poly['geo']['level-1']
@@ -251,7 +278,7 @@ def map_polygons(
     return places
 
 
-def get_polygons(*paths: str) -> RawPolygonData:
+def get_raw_polygon_data(*paths: str) -> RawPolygonData:
     """
     Parse and return the polygon data contained in the
     GeoJSON files at ``paths``.
@@ -310,8 +337,8 @@ if __name__ == '__main__': # pragma: no cover
     cities_ = map_neighborhoods(cities_, in_neighborhoods)
     cities_ = map_polygons(cities_, in_polygons)
 
-    with open('C:\\users\\iliyanvidev\\desktop\\out-places.json', 'wt', encoding='utf8') as file:
-        file.write(json.dumps(cities_, indent=4, ensure_ascii=False))
+    # with open('C:\\users\\iliyanvidev\\desktop\\out-full-places.json', 'wt', encoding='utf8') as file:
+    #     file.write(json.dumps(cities_, indent=4, ensure_ascii=False))
 
     # cities_ = sort_neighborhoods(cities_)
     # write_cities_json(cities_, out_path)
