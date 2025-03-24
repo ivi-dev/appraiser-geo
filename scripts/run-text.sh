@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 
 python -m src.main --cities "./resources/Градове.txt" \
                    --neighborhoods "./resources/Квартали.txt" \

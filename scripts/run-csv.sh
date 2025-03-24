@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 
 python -m src.main --csv "./resources/geography_nomenclature_(ORIGINAL).csv" \
                    --polygons "./resources/polygons/geo-level-1.geojson" \
