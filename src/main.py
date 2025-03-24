@@ -16,7 +16,7 @@ from src.constants import ALL, DEFAULT_ALL
 from src.types import GeoCity, PartitionedCity, FullCity, \
                       RawPolygonData, RawPolygonDataItem, Polygons
 
-from src.util import read_sorted, sort_neighborhoods
+from src.util import read_sorted
 from src.args import parse as parse_args
 from src.extractor import NEIGHBORHOODS_KEY, extract_geo_data, transliter
 
@@ -185,7 +185,7 @@ def map_polygons(
                 lvl_2_bg = poly['geo']['level-2-bg']
                 neigh = {
                     'name': lvl_2_bg, 
-                    'polygons': poly['coordinates']
+                    'geoJSON': poly['geoJSON']
                 }
                 if lvl_2 != 'all':
                     if lvl_1 not in unmapped_neighborhoods:
@@ -202,23 +202,22 @@ def map_polygons(
 
     def map_areas_to_polygons():
         """
-        Map the geographical area to theur polygons.
+        Map the geographical area to their polygons.
         """
 
         for poly in unmapped_polys:
             clean_name = poly['geo']['level-1'].replace('_', ' ').title()
             place_name = transliter.translit(clean_name)
             is_area = poly['geo']['level-1'] not in cities \
-                    and place_name not in cities
+                      and place_name not in cities
             if 'level-2' not in poly['geo'] and is_area: # It's an AREA
                 places[AREA_NAMES[poly['geo']['level-1']]] = {
                     'geography': {
                         'level-1': poly['geo']['level-1']
                     },
-                    'polygons': poly['coordinates'],
-                    'is_city_or_town': False
+                    'geoJSON': poly['geoJSON'],
+                    'isArea': True
                 }
-                break
 
     def map_cities_to_polygons():
         """
@@ -231,9 +230,10 @@ def map_polygons(
             place_name = transliter.translit(clean_name)
             is_city = poly['geo']['level-1'] in cities or place_name in cities
             if 'level-2' not in poly['geo'] and is_city: # It's a CITY
-                for _, data in places.items(): # Add that city's polygons
+                for _, data in places.items(): # Add that city's GeoJSON
                     if data['geography']['level-1'] == poly['geo']['level-1']:
-                        data['polygons'] = poly['coordinates']
+                        data['geoJSON'] = poly['geoJSON']
+                        data['isCity'] = True
                         break
 
     def map_towns_to_polygons():
@@ -249,7 +249,8 @@ def map_polygons(
             data = find_polygon_data(level_1, level_2)
             if data is not None:
                 poly, idx = data[0], data[1]
-                place_data['polygons'] = poly['coordinates']
+                place_data['geoJSON'] = poly['geoJSON']
+                place_data['isCity'] = False
                 mapped_polys.append(idx)
 
     def map_neighborhoods_to_polygons():
@@ -285,6 +286,7 @@ def map_polygons(
                             place_data['neighborhoods'] = \
                                 unmapped_neighborhoods[city_lvl_1]
                             cities.append(place_name)
+                            place_data['isCity'] = True
                             break
 
     polygons_ = get_raw_polygon_data(*polygon_paths)
@@ -315,7 +317,7 @@ def get_raw_polygon_data(*paths: str) -> RawPolygonData:
                 'geo': {
                     'level-1': feature['properties']['geography_level_1']
                 },
-                'coordinates': feature['geometry']['coordinates'],
+                'geoJSON': feature,
             }
             if 'geography_level_2' in feature['properties']:
                 data['geo']['level-2'] = feature['properties']['geography_level_2']
@@ -357,9 +359,4 @@ if __name__ == '__main__': # pragma: no cover
     cities_ = map_geo(cities_)
     cities_ = map_neighborhoods(cities_, in_neighborhoods)
     cities_ = map_polygons(cities_, in_polygons)
-
-    # with open('C:\\users\\iliyanvidev\\desktop\\out-full-places.json', 'wt', encoding='utf8') as file:
-    #     file.write(json.dumps(cities_, indent=4, ensure_ascii=False))
-
-    # cities_ = sort_neighborhoods(cities_)
-    # write_cities_json(cities_, out_path)
+    write_cities_json(cities_, out_path)
