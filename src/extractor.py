@@ -7,9 +7,9 @@ import csv
 import re
 from typing import Iterable, Mapping
 
-from src.constants import ALL, NEIGHBORHOODS_KEY
+from src.constants import ALL, DEFAULT_ALL, NEIGHBORHOODS_KEY
 from src.translit import Transliterator
-from src.types import City
+from src.types import PartitionedCity
 
 # Regex
 AREA_GROUP = 'area'
@@ -76,7 +76,7 @@ def extract_geo_data(path: str) -> GeoSplit:
                 town = re.match(AREA_REGEX, col2)
                 if not town: # City
                     city_name = transliter.translit(gl1.replace('_', ' ').title())
-                    neigh = f'--{col3.title()}--' if col3.lower() == ALL.lower() else col3
+                    neigh = DEFAULT_ALL if col3.lower() == ALL.lower() else col3
                     if city_name not in data:
                         data[city_name] = {GL1_KEY: gl1, NEIGHBORHOODS_KEY: [neigh]}
                     else:
@@ -87,10 +87,24 @@ def extract_geo_data(path: str) -> GeoSplit:
                         data[city_name] = {GL1_KEY: gl1, GL2_KEY: col2}
                     else:
                         data[city_name].update({GL1_KEY: gl1, GL2_KEY: col2})
+    data = add_default(data)
     return split_geo_data(data)
 
 
-def split_geo_data(data: Mapping[str, City]) -> GeoSplit:
+def add_default(data: Mapping[str, PartitionedCity]):
+    """
+    Add a 'Select All' option to the cities' neighborhood lists,
+    that don't' already have it. 
+    """
+
+    for city in data:
+        if NEIGHBORHOODS_KEY in data[city]:
+            if DEFAULT_ALL not in data[city][NEIGHBORHOODS_KEY]:
+                data[city][NEIGHBORHOODS_KEY].append(DEFAULT_ALL)
+    return data
+
+
+def split_geo_data(data: Mapping[str, PartitionedCity]) -> GeoSplit:
     """
     Split the provided geo ``data`` into a 2-tuple containing
     city and neighborhood data respectively. The cities are 

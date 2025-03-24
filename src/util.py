@@ -5,7 +5,7 @@ This module contains general helping utilities.
 from typing import Iterable, Mapping
 
 from src.constants import NEIGHBORHOODS_KEY
-from src.types import City
+from src.types import PartitionedCity
 
 
 def print_dict(d: Mapping[any, any]) -> None:
@@ -45,15 +45,3 @@ def read_sorted(path: str) -> Iterable[str]:
 
     with open(path, 'rt', encoding='utf8') as file:
         return sorted(file.readlines())
-
-
-def sort_neighborhoods(cities: Mapping[str, City]) -> Mapping[str, City]:
-    """
-    Sort the provided ``cities``' neighborhoods in alphabetical 
-    ascending order.
-    """
-
-    for _, info in cities.items():
-        if NEIGHBORHOODS_KEY in info:
-            info[NEIGHBORHOODS_KEY] = sorted(info[NEIGHBORHOODS_KEY])
-    return cities

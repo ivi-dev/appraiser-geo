@@ -35,6 +35,13 @@ def parser() -> argparse.ArgumentParser:
         'If "--csv" is specified this is ignored.'
     )
     arg_parser.add_argument(
+        '--polygons', 
+        nargs='*',
+        help='Path(s) to one or more GeoJSON file(s) containing data about the '
+             'cities, towns\' and neighborhoods\' geographic bounds (polygons), '
+             'normally expressed as polygons drawn on a map.'
+    )
+    arg_parser.add_argument(
         '--out', 
         default='geo.json',
         help='Path to the file to write the merged geo data to. '

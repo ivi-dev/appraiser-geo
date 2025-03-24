@@ -1,2 +1,4 @@
 ﻿python -m src.main --csv ".\resources\geography_nomenclature_(ORIGINAL).csv" `
-                   --out ".\resources\Градове-Форматирани[CSV].json"
+                   --polygons ".\resources\polygons\geo-level-1.geojson" `
+                              ".\resources\polygons\geo-level-2.geojson" `
+                   --out ".\resources\Гео_Данни_-Форматирани[вход-CSV].json"

@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 
 CSV_OUT="./resources/Градове-Форматирани[CSV].json"
 TEXT_OUT="./resources/Градове-Форматирани[TEXT].json"

@@ -3,7 +3,7 @@ Data formatting
 
 Appraiser Geo expects the content of the input files it works with
 to be formatted a certain way. Here are some examples of properly 
-formatted content of the cummulative geo data, well as the city and 
+formatted content of the cummulative geo data, as well as the city and 
 neighborhood lists. "*GL1*" is the place's geography level 1 ID and 
 "*GL2*" - the geogrphy level 2 one. The examples are truncated for 
 brevity:
@@ -105,3 +105,73 @@ names of neighborhoods located in that city.
     Индустриална зона Юг
     Отдих и култура
     ...
+
+
+.. _polygons-format:
+
+*Polygons.json* (one or more files)
+-----------------------------------
+
+These files may be named whatever you choose and have to contain all 
+areas, cities/towns and neighborhoods' bounding polygons data in 
+`GeoJSON <https://geojson.org/>`_ format.
+
+Here's a truncated example for Sofia city:
+
+::
+
+    "София": {
+        "geography": {
+            "level-1": "sofia"
+        },
+        "neighborhoods": [
+            {
+                "name": "Абдовица",
+                "geoJSON": {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [
+                                    23.431912812,
+                                    42.660460952
+                                ],
+                                ...
+                            ]
+                        ]
+                    },
+                    "properties": {
+                        "geography_level_1": "sofia",
+                        "geography_level_2": "Abdovica",
+                        "geography_level_2_bg": "Абдовица",
+                        "is_multi": false,
+                        "exclude_reason": "remote",
+                        "is_clickable": 1
+                    }
+                }
+            },
+            ...
+        ],
+        "geoJSON": {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            23.338,
+                            42.865
+                        ],
+                        ...
+                    ]
+                ]
+            },
+            "properties": {
+                "geography_level_1": "sofia",
+                "is_multi": false,
+                "is_clickable": 1
+            }
+        },
+        "isCity": true
+    }
