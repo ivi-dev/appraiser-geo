@@ -19,5 +19,5 @@ sudo apt install -y dos2unix
 dos2unix ./scripts/*.sh -v
 
 # 5. Make every .sh script in ./scripts executable
-# by its author an group
+# by its author and group
 sudo chmod ug+x ./scripts/*.sh
