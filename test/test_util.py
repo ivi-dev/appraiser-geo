@@ -3,7 +3,7 @@
 import unittest
 from unittest.mock import call, mock_open, patch
 
-from src.util import print_dict, read_sorted, sort_neighborhoods
+from src.util import print_dict, read_sorted
 
 
 class TestUtil(unittest.TestCase):
@@ -19,14 +19,3 @@ class TestUtil(unittest.TestCase):
     def test_read_sorted_returns_lines_of_file_in_asc_order(self):
         lines = read_sorted('file.txt')
         self.assertEqual(['a', 'b\n', 'c\n'], lines)
-
-    def test_sort_neighborhoods_sorts_ascending(self):
-        cities = {
-            'City-1': {'neighborhoods': ['b', 'c', 'a']},
-            'City-2': {},
-        }
-        cities = sort_neighborhoods(cities)
-        self.assertEqual({
-            'City-1': {'neighborhoods': ['a', 'b', 'c']},
-            'City-2': {},
-        }, cities)

@@ -45,15 +45,3 @@ def read_sorted(path: str) -> Iterable[str]:
 
     with open(path, 'rt', encoding='utf8') as file:
         return sorted(file.readlines())
-
-
-def sort_neighborhoods(cities: Mapping[str, PartitionedCity]) -> Mapping[str, PartitionedCity]:
-    """
-    Sort the provided ``cities``' neighborhoods in alphabetical 
-    ascending order.
-    """
-
-    for _, info in cities.items():
-        if NEIGHBORHOODS_KEY in info:
-            info[NEIGHBORHOODS_KEY] = sorted(info[NEIGHBORHOODS_KEY])
-    return cities
