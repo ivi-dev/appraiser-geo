@@ -91,7 +91,7 @@ class TestMain(unittest.TestCase):
             'Якоруда': {'geography': {'level-1': 'southwestern', 'level-2': 'BLG53'}},
         }, mapped)
 
-    @patch('src.main.open', mock_open(read_data=mock_neighborhoods))
+    @patch('src.mapper.open', mock_open(read_data=mock_neighborhoods))
     def test_map_neighborhoods_filepath_maps_cities_to_neighborhoods(self):
         cities = {
             'Благоевград': {'geography': {'level-1': 'blagoevgrad'}},

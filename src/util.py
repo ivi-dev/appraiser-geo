@@ -4,9 +4,6 @@ This module contains general helping utilities.
 
 from typing import Iterable, Mapping
 
-from src.constants import NEIGHBORHOODS_KEY
-from src.types import PartitionedCity
-
 
 def print_dict(d: Mapping[any, any]) -> None:
     """
