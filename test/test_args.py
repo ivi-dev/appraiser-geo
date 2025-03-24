@@ -39,6 +39,7 @@ class TestArgs(unittest.TestCase):
                 csv=None,
                 cities='cities.txt', 
                 neighborhoods='neighborhoods.txt', 
+                polygons=None,
                 out='geo.json'
             ), 
             prog_args
@@ -52,6 +53,7 @@ class TestArgs(unittest.TestCase):
                 csv=None,
                 cities='cities.txt', 
                 neighborhoods='neighborhoods.txt', 
+                polygons=None,
                 out='out.json'
             ), 
             prog_args
@@ -65,6 +67,7 @@ class TestArgs(unittest.TestCase):
                 csv='geo.csv',
                 cities=None, 
                 neighborhoods=None, 
+                polygons=None,
                 out='geo.json'
             ), 
             prog_args
