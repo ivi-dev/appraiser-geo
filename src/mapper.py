@@ -122,7 +122,7 @@ def map_neighborhoods(
     return cities
 
 
-def find_polygon_data(
+def find_town_polygon_data(
     level_1: str,
     level_2: Optional[str],
     polygons: RawPolygonData
@@ -136,9 +136,8 @@ def find_polygon_data(
     idx = 0
     for poly_data in polygons:
         if poly_data['geo']['level-1'] == level_1:
-            if 'level-2' in poly_data['geo']:
-                if poly_data['geo']['level-2'] == level_2:
-                    return poly_data, idx
+            if 'level-2' in poly_data['geo'] and poly_data['geo']['level-2'] == level_2:
+                return poly_data, idx
         idx += 1
     return None
 
@@ -252,7 +251,7 @@ def map_towns_to_polygons(
         level_2 = place_data['geography']['level-2'] if \
                 'level-2' in place_data['geography'] else \
                 None
-        data = find_polygon_data(level_1, level_2, polygons)
+        data = find_town_polygon_data(level_1, level_2, polygons)
         if data is not None:
             poly, idx = data[0], data[1]
             place_data['geoJSON'] = poly['geoJSON']
