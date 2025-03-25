@@ -4,22 +4,23 @@ import json
 import unittest
 from unittest.mock import mock_open, patch
 
-from src.mapper import find_town_polygon_data, get_raw_polygon_data, get_unmapped_polygons, map_geo, map_neighborhoods
+from src.mapper import find_town_polygon_data, get_raw_polygon_data, get_unmapped_neighborhoods, \
+                       get_unmapped_polygons, map_geo, map_neighborhoods
 
 
 class TestMapper(unittest.TestCase):
     mock_geo_feature_1 = {
         'properties': {
-            'geography_level_1': 'feature-1-level-1',
-            'geography_level_2': 'feature-1-level-2',
-            'geography_level_2_bg': 'feature-1-level-2-bg',
+            'geography_level_1': 'northeastern',
+            'geography_level_2': 'VAR01',
+            'geography_level_2_bg': 'Аврен',
             'prop': 'val',
         }
     }
 
     mock_geo_feature_2 = {
         'properties': {
-            'geography_level_1': 'feature-2-level-1',
+            'geography_level_1': 'sofia',
             'prop': 'val',
         }
     }
@@ -215,3 +216,53 @@ class TestMapper(unittest.TestCase):
         unmapped = get_unmapped_polygons(polygons, [0, 1])
         self.assertEqual(1, len(unmapped))
         self.assertEqual(polygons[2], unmapped[0])
+
+    def test_get_unmapped_neighborhoods_returns_still_unmapped_neighborhoods(self):
+        unmapped_polys = [
+            {
+                'geo': {
+                    'level-1': 'sofia',
+                },
+                'geoJSON': 'geoJSON'
+            },
+            {
+                'geo': {
+                    'level-1': 'sofia',
+                    'level-2': 'neigh-2',
+                    'level-2-bg': 'Квартал-2',
+                },
+                'geoJSON': 'geoJSON'
+            },
+            {
+                'geo': {
+                    'level-1': 'sofia',
+                    'level-2': 'neigh-3',
+                    'level-2-bg': 'Квартал-3',
+                },
+                'geoJSON': 'geoJSON'
+            },
+            {
+                'geo': {
+                    'level-1': 'sofia',
+                    'level-2': 'all',
+                    'level-2-bg': 'Всички',
+                },
+                'geoJSON': 'geoJSON'
+            }
+        ]
+        unmapped_neigh = get_unmapped_neighborhoods(unmapped_polys)
+        self.assertEqual(
+            {
+                'sofia': [
+                    {
+                        'name': 'Квартал-2', 
+                        'geoJSON': 'geoJSON'
+                    },
+                    {
+                        'name': 'Квартал-3', 
+                        'geoJSON': 'geoJSON'
+                    },
+                ]
+            }, 
+            unmapped_neigh
+        )
