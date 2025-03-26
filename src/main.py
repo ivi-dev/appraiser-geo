@@ -50,5 +50,5 @@ if __name__ == '__main__': # pragma: no cover
         sys.exit(1)
     cities_ = map_geo(cities_)
     cities_ = map_neighborhoods(cities_, in_neighborhoods)
-    cities_ = map_polygons(cities_, in_polygons)
+    cities_ = map_polygons(cities_, *in_polygons)
     write_cities_json(cities_, out_path)

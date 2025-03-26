@@ -122,27 +122,6 @@ def map_neighborhoods(
     return cities
 
 
-def find_polygon_data(
-    level_1: str,
-    level_2: Optional[str],
-    polygons: RawPolygonData
-) -> tuple[RawPolygonDataItem, int]:
-    """
-    Return a two-tuple of the raw polygon data item matching
-    the specified ``level_1`` and ``level_2``, and the index
-    of that item in ``polygons``.
-    """
-
-    idx = 0
-    for poly_data in polygons:
-        if poly_data['geo']['level-1'] == level_1:
-            if 'level-2' in poly_data['geo']:
-                if poly_data['geo']['level-2'] == level_2:
-                    return poly_data, idx
-        idx += 1
-    return None
-
-
 def get_unmapped_polygons(
     polygons: RawPolygonData,
     mapped_polys: list[int]
@@ -192,6 +171,27 @@ def get_unmapped_neighborhoods(
     return unmapped_neighborhoods
 
 
+def find_town_polygon_data(
+    level_1: str,
+    level_2: Optional[str],
+    polygons: RawPolygonData
+) -> tuple[RawPolygonDataItem, int]:
+    """
+    Return a two-tuple of the raw polygon data item matching
+    the specified ``level_1`` and ``level_2``, and the index
+    of that item in ``polygons``.
+    """
+
+    idx = 0
+    for poly_data in polygons:
+        if poly_data['geo']['level-1'] == level_1:
+            if 'level-2' in poly_data['geo'] and \
+                poly_data['geo']['level-2'] == level_2:
+                return poly_data, idx
+        idx += 1
+    return None
+
+
 def map_areas_to_polygons(
     unmapped_polys: Iterable[RawPolygonDataItem],
     cities: list[str],
@@ -201,6 +201,7 @@ def map_areas_to_polygons(
     Map the geographical area to their polygons.
     """
 
+    # print(json.dumps(places, indent=4, ensure_ascii=False))
     for poly in unmapped_polys:
         clean_name = poly['geo']['level-1'].replace('_', ' ').title()
         place_name = transliter.translit(clean_name)
@@ -246,19 +247,19 @@ def map_towns_to_polygons(
     Map towns to their polygons.
     """
 
-    mapped_polys = []
+    mapped_towns = []
     for _, place_data in places.items():
         level_1 = place_data['geography']['level-1']
         level_2 = place_data['geography']['level-2'] if \
                 'level-2' in place_data['geography'] else \
                 None
-        data = find_polygon_data(level_1, level_2, polygons)
+        data = find_town_polygon_data(level_1, level_2, polygons)
         if data is not None:
             poly, idx = data[0], data[1]
             place_data['geoJSON'] = poly['geoJSON']
             place_data['isCity'] = False
-            mapped_polys.append(idx)
-    return mapped_polys
+            mapped_towns.append(idx)
+    return mapped_towns
 
 
 def map_neighborhoods_to_polygons(
@@ -305,7 +306,7 @@ def map_neighborhoods_to_polygons(
 
 def map_polygons(
     places: Mapping[str, PartitionedCity],
-    polygon_paths: Iterable[str]
+    *polygon_paths: Iterable[str]
 ) -> Mapping[str, FullCity]:
     """
     Map each of the ``places`` to its GeoJSON polygons.
