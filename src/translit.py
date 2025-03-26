@@ -35,9 +35,10 @@ class Transliterator:
 
     def translit(self, name: str) -> str:
         """
-        Transliterate the specified `name` into `locale`,
-        also performing a spell correction by default, 
-        as per `correct`.
+        Transliterate the specified `name` into this
+        transliterator's locale, also performing a 
+        spell correction by default, as per this
+        transliterator's correction table.
         
         This method uses the 
         `transliterate <https://pypi.org/project/transliterate/>`_
