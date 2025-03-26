@@ -43,6 +43,7 @@ on:
 
 env:
   build-artifact-if-no-files-found: error
+  python-ver: 3.12
 
 jobs:
   build-linux-app:
@@ -56,7 +57,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5.1.1
         with:
-          python-version: 3.11
+          python-version: ${{ env.python-ver }}
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Run build
@@ -80,7 +81,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5.1.1
         with:
-          python-version: 3.11
+          python-version: ${{ env.python-ver }}
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Run build
@@ -104,7 +105,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5.1.1
         with:
-          python-version: 3.11
+          python-version: ${{ env.python-ver }}
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Run build
