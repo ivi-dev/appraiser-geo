@@ -7,11 +7,16 @@ file containing compact presentations of those places along with their geography
 level(s) and constituent areas.
 """
 
+import copy
 import json
 import sys
 from typing import Mapping
 
-from src.mapper import map_geo, map_neighborhoods, map_polygons
+from src.constants import GEO_JSON_KEY, \
+                          IS_CITY_KEY, IS_SUBURBS_KEY, NEIGHBORHOODS_KEY, \
+                          SHORTCUT_CITY_KEY, SHORTCUT_KEY, SHORTCUT_NEIGHBORHOOD_KEY, \
+                          SUBURBAN_NEIGHBORHOOD_NAME
+from src.mapper import map_geo, map_neighborhoods, map_polygons, update_suburbs
 from src.types import PartitionedCity
 
 from src.util import read_sorted
@@ -51,4 +56,5 @@ if __name__ == '__main__': # pragma: no cover
     cities_ = map_geo(cities_)
     cities_ = map_neighborhoods(cities_, in_neighborhoods)
     cities_ = map_polygons(cities_, *in_polygons)
+    cities_ = update_suburbs(cities_)
     write_cities_json(cities_, out_path)
