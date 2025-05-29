@@ -51,3 +51,6 @@ PartitionedCity = dict[str, Geo | Neigborhoods]
 # Here, the city/town's neighborhoods are mapped to their
 # own polygon data too.
 FullCity = dict[str, Geo | GeoNeigborhoods | Polygons]
+
+# A map of a city's suburban area.
+CitySuburbs = dict[str, Geo | dict[str, str] | bool]
