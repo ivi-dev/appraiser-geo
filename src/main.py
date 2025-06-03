@@ -7,15 +7,10 @@ file containing compact presentations of those places along with their geography
 level(s) and constituent areas.
 """
 
-import copy
 import json
 import sys
 from typing import Mapping
 
-from src.constants import GEO_JSON_KEY, \
-                          IS_CITY_KEY, IS_SUBURBS_KEY, NEIGHBORHOODS_KEY, \
-                          SHORTCUT_CITY_KEY, SHORTCUT_KEY, SHORTCUT_NEIGHBORHOOD_KEY, \
-                          SUBURBAN_NEIGHBORHOOD_NAME
 from src.mapper import map_geo, map_neighborhoods, map_polygons, update_suburbs
 from src.types import PartitionedCity
 

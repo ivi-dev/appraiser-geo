@@ -10,7 +10,9 @@ import copy
 import json
 import re
 from typing import Iterable, Mapping, Optional
-from src.constants import ALL, DEFAULT_ALL, GEO_JSON_KEY, IS_CITY_KEY, IS_SUBURBS_KEY, NEIGHBORHOODS_KEY, SHORTCUT_CITY_KEY, SHORTCUT_KEY, SHORTCUT_NEIGHBORHOOD_KEY, SUBURBAN_NEIGHBORHOOD_NAME
+from src.constants import ALL, DEFAULT_ALL, GEO_JSON_KEY, IS_CITY_KEY, IS_SUBURBS_KEY, \
+                          NEIGHBORHOODS_KEY, SHORTCUT_CITY_KEY, SHORTCUT_KEY, \
+                          SHORTCUT_NEIGHBORHOOD_KEY, SUBURBAN_NEIGHBORHOOD_NAME
 from src.constants import AREA_NAMES, CITY_DELIM_REGEX, CITY_NAME_GROUP, CITY_NAME_REGEX, \
                           CITY_REGEX, GEO_KEY, GEO_LEVEL_1_GROUP, GEO_LEVEL_1_KEY,        \
                           GEO_LEVEL_2_GROUP, GEO_LEVEL_2_KEY
@@ -362,7 +364,7 @@ def update_suburbs(cities: Mapping[str, FullCity]) -> Mapping[str, FullCity]:
         entry[SHORTCUT_KEY][SHORTCUT_NEIGHBORHOOD_KEY] = SUBURBAN_NEIGHBORHOOD_NAME
         entry[IS_SUBURBS_KEY] = True
         return entry
-    
+
     def update_cities(data: dict[str, int]):
         """
         Update the cities nomenclature with the associated cities'
