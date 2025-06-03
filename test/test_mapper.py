@@ -4,11 +4,13 @@ import json
 import unittest
 from unittest.mock import mock_open, patch
 
+from src.constants import SUBURBAN_NEIGHBORHOOD_NAME
 from src.mapper import find_town_polygon_data, get_raw_polygon_data,       \
                        get_unmapped_neighborhoods,                         \
                        get_unmapped_polygons, map_areas_to_polygons,       \
                        map_cities_to_polygons, map_geo, map_neighborhoods, \
-                       map_neighborhoods_to_polygons, map_polygons, map_towns_to_polygons
+                       map_neighborhoods_to_polygons, map_polygons, map_towns_to_polygons, \
+                       update_suburbs
 
 
 class TestMapper(unittest.TestCase):
@@ -77,7 +79,7 @@ class TestMapper(unittest.TestCase):
         ensure_ascii=False
     )
 
-    mock_city_1 =  {
+    mock_city_1 = {
         'name': 'София',
         'geo-level-1': 'sofia',
         'neigh': [
@@ -85,7 +87,7 @@ class TestMapper(unittest.TestCase):
         ]
     }
 
-    mock_city_2 =  {
+    mock_city_2 = {
         'name': 'Пловдив',
         'geo-level-1': 'plovdiv',
         'neigh': [
@@ -539,3 +541,79 @@ class TestMapper(unittest.TestCase):
         }
         mapped_places = map_polygons(places, 'GeoJSON.json')
         self.assertEqual(self.expected_mapped_places, mapped_places)
+
+    def test_update_suburbs(self):
+        cities = {
+            'Аврен': {
+                'geography': {
+                    'level-1': 'northeastern',
+                    'level-2': 'VAR01'
+                },
+                'geoJSON': 'Avren-geoJSON-Data',
+            },
+            'Пловдив': {
+                'geography': {
+                    'level-1': 'plovdiv'
+                },
+                'neighborhoods': [
+                    {'name': 'Въстанически'},
+                ],
+                'geoJSON': 'Plovdiv-geoJSON-Data',
+                'isCity': True
+            },
+            'София': {
+                'geography': {
+                    'level-1': 'sofia'
+                },
+                'neighborhoods': [
+                    {'name': 'Изгрев'},
+                    {'name': SUBURBAN_NEIGHBORHOOD_NAME}
+                ],
+                'geoJSON': 'Sofia-geoJSON-Data',
+                'isCity': True
+            }
+        }
+        expected = {
+            'Аврен': {
+                'geography': {
+                    'level-1': 'northeastern',
+                    'level-2': 'VAR01'
+                },
+                'geoJSON': 'Avren-geoJSON-Data',
+            },
+            'Пловдив': {
+                'geography': {
+                    'level-1': 'plovdiv'
+                },
+                'neighborhoods': [
+                    {'name': 'Въстанически'},
+                ],
+                'geoJSON': 'Plovdiv-geoJSON-Data',
+                'isCity': True
+            },
+            'София': {
+                'geography': {
+                    'level-1': 'sofia'
+                },
+                'neighborhoods': [
+                    {'name': 'Изгрев'},
+                    {'name': SUBURBAN_NEIGHBORHOOD_NAME}
+                ],
+                'geoJSON': 'Sofia-geoJSON-Data',
+                'isCity': True
+            },
+            f'София-{SUBURBAN_NEIGHBORHOOD_NAME}': {
+                'geography': {
+                    'level-1': 'sofia'
+                },
+                'geoJSON': 'Sofia-geoJSON-Data',
+                'shortcut': {
+                    'city': 'София', 
+                    'neighborhood': 'Покрайнини'
+                },
+                'isSuburbs': True
+            }
+        }
+        self.maxDiff = None
+        cities = update_suburbs(cities)
+        self.assertEqual(expected, cities)
