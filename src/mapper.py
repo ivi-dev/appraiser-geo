@@ -356,7 +356,6 @@ def update_suburbs(cities: Mapping[str, FullCity]) -> Mapping[str, FullCity]:
 
         entry = copy.deepcopy(cities[city_name])
         del entry[NEIGHBORHOODS_KEY]
-        del entry[GEO_JSON_KEY]
         del entry[IS_CITY_KEY]
         entry[SHORTCUT_KEY] = {}
         entry[SHORTCUT_KEY][SHORTCUT_CITY_KEY] = city_name
@@ -372,7 +371,6 @@ def update_suburbs(cities: Mapping[str, FullCity]) -> Mapping[str, FullCity]:
 
         for city, suburbs_idx in data.items():
             cities[f'{city}-{SUBURBAN_NEIGHBORHOOD_NAME}'] = create_suburb_entry(city)
-            cities[city][NEIGHBORHOODS_KEY].pop(suburbs_idx)
 
     data = get_suburb_data()
     update_cities(data)
