@@ -369,7 +369,7 @@ def update_suburbs(cities: Mapping[str, FullCity]) -> Mapping[str, FullCity]:
         suburban data.
         """
 
-        for city, suburbs_idx in data.items():
+        for city, _ in data.items():
             cities[f'{city}-{SUBURBAN_NEIGHBORHOOD_NAME}'] = create_suburb_entry(city)
 
     data = get_suburb_data()
