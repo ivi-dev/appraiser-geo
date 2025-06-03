@@ -6,14 +6,15 @@ cities to their neighborhoods etc.
 """
 
 
+import copy
 import json
 import re
 from typing import Iterable, Mapping, Optional
-from src.constants import ALL, DEFAULT_ALL, NEIGHBORHOODS_KEY
+from src.constants import ALL, DEFAULT_ALL, GEO_JSON_KEY, IS_CITY_KEY, IS_SUBURBS_KEY, NEIGHBORHOODS_KEY, SHORTCUT_CITY_KEY, SHORTCUT_KEY, SHORTCUT_NEIGHBORHOOD_KEY, SUBURBAN_NEIGHBORHOOD_NAME
 from src.constants import AREA_NAMES, CITY_DELIM_REGEX, CITY_NAME_GROUP, CITY_NAME_REGEX, \
                           CITY_REGEX, GEO_KEY, GEO_LEVEL_1_GROUP, GEO_LEVEL_1_KEY,        \
                           GEO_LEVEL_2_GROUP, GEO_LEVEL_2_KEY
-from src.types import FullCity, GeoCity, PartitionedCity, Polygons, \
+from src.types import CitySuburbs, FullCity, GeoCity, PartitionedCity, Polygons, \
                       RawPolygonData, RawPolygonDataItem
 from src.extractor import transliter
 
@@ -34,7 +35,7 @@ def get_raw_polygon_data(*paths: str) -> RawPolygonData:
                 'geo': {
                     'level-1': feature['properties']['geography_level_1']
                 },
-                'geoJSON': feature,
+                GEO_JSON_KEY: feature,
             }
             if 'geography_level_2' in feature['properties']:
                 data['geo']['level-2'] = feature['properties']['geography_level_2']
@@ -155,7 +156,7 @@ def get_unmapped_neighborhoods(
             lvl_2_bg = poly['geo']['level-2-bg']
             neigh = {
                 'name': lvl_2_bg, 
-                'geoJSON': poly['geoJSON']
+                GEO_JSON_KEY: poly[GEO_JSON_KEY]
             }
             if lvl_2 != 'all':
                 if lvl_1 not in unmapped_neighborhoods:
@@ -212,7 +213,7 @@ def map_areas_to_polygons(
                 'geography': {
                     'level-1': poly['geo']['level-1']
                 },
-                'geoJSON': poly['geoJSON'],
+                GEO_JSON_KEY: poly[GEO_JSON_KEY],
                 'isArea': True
             }
 
@@ -234,8 +235,8 @@ def map_cities_to_polygons(
         if 'level-2' not in poly['geo'] and is_city: # It's a CITY
             for _, data in places.items(): # Add that city's GeoJSON
                 if data['geography']['level-1'] == poly['geo']['level-1']:
-                    data['geoJSON'] = poly['geoJSON']
-                    data['isCity'] = True
+                    data[GEO_JSON_KEY] = poly[GEO_JSON_KEY]
+                    data[ IS_CITY_KEY] = True
                     break
 
 
@@ -256,8 +257,8 @@ def map_towns_to_polygons(
         data = find_town_polygon_data(level_1, level_2, polygons)
         if data is not None:
             poly, idx = data[0], data[1]
-            place_data['geoJSON'] = poly['geoJSON']
-            place_data['isCity'] = False
+            place_data[GEO_JSON_KEY] = poly[GEO_JSON_KEY]
+            place_data[ IS_CITY_KEY] = False
             mapped_towns.append(idx)
     return mapped_towns
 
@@ -299,7 +300,7 @@ def map_neighborhoods_to_polygons(
                         place_data['neighborhoods'] = \
                             unmapped_neighborhoods[city_lvl_1]
                         cities.append(place_name)
-                        place_data['isCity'] = True
+                        place_data[ IS_CITY_KEY] = True
                         break
     return cities
 
@@ -324,3 +325,54 @@ def map_polygons(
     map_cities_to_polygons(unmapped_polys, cities, places)
     map_areas_to_polygons(unmapped_polys, cities, places)
     return places
+
+
+def update_suburbs(cities: Mapping[str, FullCity]) -> Mapping[str, FullCity]:
+    """
+    Create new entries in the specified ``cities`` nomenclature
+    to reflect the associated cities' suburban areas.
+    """
+
+    def get_suburb_data() -> dict[str, int]:
+        """
+        Return a map of the names of the cities with
+        declared suburban areas and the index of the 
+        "Suburbs" option in thier list of neighborhoods.
+        """
+
+        data_ = {} # Format: {'<CITY_NAME>': <SUBURB_OPTION_IDX>}
+        for city, data in cities.items():
+            if NEIGHBORHOODS_KEY in data:
+                for i, neigh in enumerate(data[NEIGHBORHOODS_KEY]):
+                    if neigh['name'] == SUBURBAN_NEIGHBORHOOD_NAME:
+                        data_[city] = i
+                        break
+        return data_
+
+    def create_suburb_entry(city_name: str) -> CitySuburbs:
+        """
+        Create a new 'suburbs' nomenclature entry.
+        """
+
+        entry = copy.deepcopy(cities[city_name])
+        del entry[NEIGHBORHOODS_KEY]
+        del entry[IS_CITY_KEY]
+        entry[SHORTCUT_KEY] = {}
+        entry[SHORTCUT_KEY][SHORTCUT_CITY_KEY] = city_name
+        entry[SHORTCUT_KEY][SHORTCUT_NEIGHBORHOOD_KEY] = SUBURBAN_NEIGHBORHOOD_NAME
+        entry[IS_SUBURBS_KEY] = True
+        return entry
+    
+    def update_cities(data: dict[str, int]):
+        """
+        Update the cities nomenclature with the associated cities'
+        suburban data.
+        """
+
+        for city, _ in data.items():
+            cities[f'{city}-{SUBURBAN_NEIGHBORHOOD_NAME}'] = create_suburb_entry(city)
+
+    data = get_suburb_data()
+    update_cities(data)
+    cities = dict(sorted(cities.items()))
+    return cities

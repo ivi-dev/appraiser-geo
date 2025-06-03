@@ -19,6 +19,13 @@ GEO_KEY = 'geography'
 GEO_LEVEL_1_KEY = 'level-1'
 GEO_LEVEL_2_KEY = 'level-2'
 NEIGHBORHOODS_KEY = 'neighborhoods'
+SUBURBAN_NEIGHBORHOOD_NAME = 'Покрайнини'
+GEO_JSON_KEY = 'geoJSON'
+IS_CITY_KEY = 'isCity'
+IS_SUBURBS_KEY = 'isSuburbs'
+SHORTCUT_KEY = 'shortcut'
+SHORTCUT_CITY_KEY = 'city'
+SHORTCUT_NEIGHBORHOOD_KEY = 'neighborhood'
 
 # Misc
 AREA_NAMES = {
